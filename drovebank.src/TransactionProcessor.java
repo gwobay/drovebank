@@ -80,6 +80,7 @@ public class TransactionProcessor extends Thread{
 					return;
 				}
 				bRecord.setStatus(TransactionRecord.TransactionState.SUCCESS);
+				bRecord.setTransactionActionType(TransactionRecord.ActionType.LOOKUP);
 				bRecord.setMachineId(aRecord.getRecordHandler());
 				bRecord.setTransactionType(aRecord.getTransactionType());
 				finishOneRecord(bRecord);
@@ -135,7 +136,7 @@ public class TransactionProcessor extends Thread{
 			tRecord.balance = pfRecord.balance;				
 		}
 		else if (tRecord.isWithdraw()){
-			if (tRecord.getAmount() > pfRecord.lastBalance){
+			if (tRecord.getAmount() > pfRecord.balance){
 				aRecord.setStatus(TransactionRecord.TransactionState.FAILED);
 				todayMoneyTransaction.add(aRecord);
 				log.warning("NOT ENOUGH MONEY FOR THIS TRANSACTION:"+aRecord.toString());

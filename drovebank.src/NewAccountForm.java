@@ -1,3 +1,6 @@
+import java.text.DecimalFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import javafx.beans.value.ChangeListener;
@@ -22,7 +25,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class NewAccountForm extends MyFormBuilder {
-	final String myName="NewAccountForm";
+	static final String myName="NewAccountForm";
 	public String getName(){
 		return myName;
 	}
@@ -40,6 +43,7 @@ public class NewAccountForm extends MyFormBuilder {
 			{"phone", DataType.STRING},
 			{ "ssc4", DataType.STRING},
 			{ "birthday", DataType.STRING},
+			{"createDateTime", DataType.STRING},
 			{"lastDate", DataType.STRING},
 			{ "lastTime", DataType.STRING},
 			{ "balance", DataType.DOUBLE}
@@ -76,7 +80,7 @@ public class NewAccountForm extends MyFormBuilder {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-        Text scenetitle = new Text("Welcome "+formName+" Customer");
+        Text scenetitle = new Text("Welcome "+formTitleMsg);
         scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         grid.add(scenetitle, 0, 0, 2, 1);
         /*
@@ -90,8 +94,11 @@ public class NewAccountForm extends MyFormBuilder {
 		for (int i=0; i<fields.length; i++){
 			final String ss=fields[i][0];
 			if (action==Form_Action.NEW){
-				//if (ss.equalsIgnoreCase("accountNo"))continue;
+				if (ss.equalsIgnoreCase("accountNo"))continue;
 				if (ss.equalsIgnoreCase("balance"))continue;
+				if (ss.equalsIgnoreCase("createDateTime"))continue;
+				if (ss.equalsIgnoreCase("lastDate"))continue;
+				if (ss.equalsIgnoreCase("lastTime"))continue;
 			}
 			HBox hBox = new HBox(0);
 			hBox.setAlignment(Pos.CENTER_LEFT);//CENTER);
@@ -277,6 +284,8 @@ public class NewAccountForm extends MyFormBuilder {
 	void setAction(Form_Action act){
 		action=act;
 	}
+	static DecimalFormat dI=new DecimalFormat("00");
+	//DecimalFormat dF=new DecimalFormat("0.00");
 	@Override
 	public TransactionRecord saveDataToRecord(){
 		HashMap<String, String> dataMap=currentRecord.getRecordDataMap();
@@ -291,7 +300,10 @@ public class NewAccountForm extends MyFormBuilder {
 			currentRecord.getRecordDataMap().put(which1, ((TextField)node).getText());
 			switch (which1){
 			case "accountNo":
-				aProfile.setAccountNo(((TextField)node).getText()) ;
+				//if (action==Form_Action.NEW)
+				aProfile.setAccountNo(aCustomer.getAccount()) ;
+				//else
+				//aProfile.setAccountNo(((TextField)node).getText()) ;
 				break;
 			case "firstName":
 				aProfile.setFirstName(((TextField)node).getText()) ;
@@ -323,14 +335,14 @@ public class NewAccountForm extends MyFormBuilder {
 			case "birthday":
 				aProfile.setBirthday(((TextField)node).getText()) ;
 				break;
-				/*
-			case "lastDate":
-				aProfile.setBirthday(((TextField)node).getText()) ;
+			case "createDateTime":
+				if (action==Form_Action.NEW){
+		    		Calendar cal=GregorianCalendar.getInstance();
+	    		String date=dI.format(cal.get(Calendar.MONTH))+"/"+dI.format(cal.get(Calendar.DATE))+"/"+dI.format(cal.get(Calendar.YEAR));
+	    		String time=dI.format(cal.get(Calendar.HOUR))+":"+dI.format(cal.get(Calendar.MINUTE));
+				aProfile.setCreateDateTime(date+"@"+time);
+				}
 				break;
-			case "lastTime":
-				aProfile.setBirthday(((TextField)node).getText()) ;
-				break;
-				*/
 			case "balance":
 				aProfile.setBalance(Double.parseDouble(((TextField)node).getText())) ;
 				break;

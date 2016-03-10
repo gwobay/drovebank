@@ -60,17 +60,26 @@ import javafx.stage.Stage;
 	        VBox vbBtn = new VBox(15);
 	        vbBtn.setAlignment(Pos.CENTER);
 	       
-	        Button btnDeposit = new Button("DEPOSI");	        
-	        btnDeposit.setPrefWidth(120);
+	        Button btnDeposit = new Button("DEPOSI");
+	        btnDeposit.setFont(Font.font("Tahoma", FontWeight.THIN, 18));
+	        btnDeposit.setPrefWidth(160);
 	        Button btnWithdraw = new Button("WITHDRAW");
-	        btnWithdraw.setPrefWidth(120);
+	        btnWithdraw.setFont(Font.font("Tahoma", FontWeight.THIN, 18));
+	        btnWithdraw.setPrefWidth(160);
 	        Button btnTransfer = new Button("TRANSFER");
-	        btnTransfer.setPrefWidth(120);
+	        btnTransfer.setFont(Font.font("Tahoma", FontWeight.THIN, 18));
+	        btnTransfer.setPrefWidth(160);
 	        Button btnShowBalance = new Button("SHOW BALANCE");
-	        btnShowBalance.setPrefWidth(120);
-	        
+	        btnShowBalance.setFont(Font.font("Tahoma", FontWeight.THIN, 18));
+	        btnShowBalance.setPrefWidth(160);
 	        vbBtn.getChildren().addAll(btnDeposit, btnWithdraw, btnTransfer, btnShowBalance);
 	        grid.add(vbBtn, 0, row+2);
+	        
+	        Button back2MainBtn = new Button("Back To Main Form");
+	        back2MainBtn.setFont(Font.font("Tahoma", FontWeight.BOLD, 12));	        
+	        back2MainBtn.setPrefWidth(160);
+	        back2MainBtn.setAlignment(Pos.BOTTOM_RIGHT);
+	        grid.add(back2MainBtn, 1, row+4);
 	        final AppCommander myApp=app;
 	        //............. button event handler
 	        btnDeposit.setOnAction(new EventHandler<ActionEvent>() {	        	 
@@ -102,6 +111,14 @@ import javafx.stage.Stage;
 	            public void handle(ActionEvent e) {
 	            	processStatus=true;           	
 	            	nextFormType=Form_Type.SHOW_BALANCE;
+	            	myApp.swapWindow(primaryStage);
+	            }
+	        });
+	        back2MainBtn.setOnAction(new EventHandler<ActionEvent>() {	        	 
+	            @Override
+	            public void handle(ActionEvent e) {
+	            	processStatus=true;           	
+	            	nextFormType=Form_Type.MAIN;
 	            	myApp.swapWindow(primaryStage);
 	            }
 	        });

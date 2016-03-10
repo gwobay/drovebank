@@ -50,9 +50,9 @@ public class AppCommander extends Application {
 		TransactionRecord wkRecord;
 		TellerMachine myMachine;
 		AppCommander startedBy;
-		MyTask(TransactionRecord aRecord, TellerMachine aMachine, AppCommander app){
+		MyTask(TransactionRecord aRecord,  AppCommander app){
 			wkRecord=aRecord;
-			myMachine=aMachine;
+			myMachine=app.myMachine;
 			startedBy=app;
 		}
 		@Override public Void call() {	
@@ -104,13 +104,28 @@ public class AppCommander extends Application {
 								zRecord!=null){
 							if (zRecord==null)
 								zRecord=bRecord;
-							if (pendingForm != null) {
-								currentForm=pendingForm;
-								pendingForm=null;
-							}
-							else startedBy.currentForm=new NewAccountForm();
+							if (myMachine.currentForm == null) 
+								myMachine.currentForm=new NewAccountForm();	
 							//currentForm.nextFormType=MyFormBuilder.Form_Type.SHOW_ACCOUNT;
-							startedBy.currentForm.setCurrentRecord(zRecord);
+							zRecord.recordDataMap=zRecord.recordToHashMap();
+							myMachine.currentForm.setCurrentRecord(zRecord);
+							startedBy.currentForm=myMachine.currentForm;
+							if (zRecord.transactionActionType!=TransactionRecord.ActionType.LOOKUP){
+								setWindowTitle("Transaction Finished OK");	
+								startedBy.currentForm.setFormTitleMsg(" Transaction Successful!!");
+							}
+							else
+							{
+								setWindowTitle(" Dear Customer");	
+								startedBy.currentForm.setFormTitleMsg(" Dear Customer");
+							}
+							if (zRecord.getTransactionType()==TransactionRecord.Type.PROFILE &&
+								!startedBy.currentForm.getName().equalsIgnoreCase("NewAccountForm")){
+								MoneyTransactionForm tmpForm=(MoneyTransactionForm)(startedBy.currentForm);
+								tmpForm.setAccountName(((AccountProfile)zRecord).getAccountName());
+								if (zRecord.transactionActionType!=TransactionRecord.ActionType.LOOKUP)
+								tmpForm.setFormAction(MoneyTransactionForm.Form_Action.SHOW);
+							}
 							updateProgress(100, 100);
 							return null;
 						}
@@ -140,9 +155,15 @@ public class AppCommander extends Application {
 						aForm.setApp(startedBy.currentForm.getApp());
 						aForm.setAction(NewAccountForm.Form_Action.SHOW);
 						setWindowTitle("New Account Balance");
+						aForm.setFormTitleMsg("New Account Balance!!");
+						aForm.setCurrentRecord(bRecord);	
+						myMachine.currentForm=aForm;
 						startedBy.currentForm=aForm;
 						//startedBy.currentForm.nextFormType=MyFormBuilder.Form_Type.SHOW_ACCOUNT;
-						startedBy.currentForm.setCurrentRecord(bRecord);
+						//if (zRecord.getTransactionType()==TransactionRecord.Type.PROFILE &&
+								//!startedBy.currentForm.getName().equalsIgnoreCase("NewAccountForm"))
+							//((MoneyTransactionForm)(startedBy.currentForm)).setAccountName(((AccountProfile)zRecord).getAccountName());
+							
 						updateProgress(100, 100);
 						/*
 						swapWindow(myStage);
@@ -155,7 +176,7 @@ public class AppCommander extends Application {
  
 	final public void sendTransactionAndWaitForResponse(Stage primaryStage,
 			TransactionRecord aRecord){
-		Task task = new MyTask(aRecord, myMachine, this);
+		Task task = new MyTask(aRecord, this);
 		aRecord.setRecordHandler(myMachine);
 		aRecord.setMachineId(myMachine);
 		lastScene=primaryStage.getScene();
@@ -199,7 +220,7 @@ public class AppCommander extends Application {
 		myMachine.setCurrentUser(currentUser);
 		currentForm=new LoginForm();
 		currentForm.setApp(this);
-		currentForm.setCurrentUser(myMachine);
+		currentForm.setCurrentUser(currentUser);
 		pendingForm=null;
 		myMachine.setStage(primaryStage);
 		myMachine.setCurrentForm(currentForm);
@@ -261,9 +282,12 @@ public class AppCommander extends Application {
 			if (pendingForm != null){
 				currentForm=pendingForm;
 				pendingForm=null;
+				//we don't need pending form!!
+				//machine has the next form to be filled
+				//which is the pending form
 			}
 			lastScene=currentScene;
-			currentForm.setCurrentUser(myMachine);
+			//currentForm.setCurrentUser(myMachine);
 			currentForm.setApp(this);
 			pendingForm=null;
 			GridPane parent=currentForm.getGrid(primaryStage);
@@ -326,13 +350,14 @@ public class AppCommander extends Application {
 						needAccountNo=true;
 						break;
 					case WITHDRAW:
-						currentForm=new WithdrawForm();
+						currentForm=new WithdrawForm(myMachine.getCurrentUser().getID());
 						needAccountNo=true;
 						break;
 					default:
 						break;
 					}
 					currentForm.setApp(this);
+					myMachine.setCurrentForm(currentForm);
 					String accountNo=null;
 					if (needAccountNo){
 						//accountNo=getAccountNoPopUp();

@@ -120,8 +120,8 @@ public abstract class MyFormBuilder {
 		Form_Type getNextFormType(){
 			return nextFormType;
 		}
-		void setCurrentUser(TellerMachine aTeller){
-			openAt=aTeller;
+		void setCurrentUser(Teller aTeller){
+			loginUser=aTeller;
 			filledBy=aTeller.getID();
 		}
 		void setCurrentRecord(TransactionRecord aRecord){
@@ -132,6 +132,12 @@ public abstract class MyFormBuilder {
 		}
 		protected TransactionRecord saveDataToRecord(){			
 			return null;
+		}
+		public void setFormTitleMsg(String msg){
+			formTitleMsg=msg;
+		}
+		public String getFormTitleMsg(){
+			return formTitleMsg;
 		}
 		public void setApp(AppCommander app1){
 			app=app1;
@@ -146,6 +152,7 @@ public abstract class MyFormBuilder {
 	enum Mode {READ_ONLY, READ_WRITE};
 
 		String formName;
+		String formTitleMsg;
 	Scene lastFormScene;
 	AppCommander app;
 	TransactionRecord dataSent;
@@ -153,8 +160,8 @@ public abstract class MyFormBuilder {
 		Parent parent;
 		List<Node> children;
 		int filledBy;
-		//Teller currentUser;
-		TellerMachine openAt;
+		Teller loginUser;
+		//TellerMachine openAt;
 		Stage myStage;
 		Mode form_mode;
 		Form_Type currentFormType;
@@ -162,45 +169,5 @@ public abstract class MyFormBuilder {
 		boolean openStatus;
 		boolean processStatus;
 		Point formGridDimension;
-		
-		Scene prepareFormByReadingAccount(Stage primaryStage, String formName){
-			
-			//---build content
-	        GridPane grid = new GridPane();
-	        //----- content detail ---------------
-	        grid.setAlignment(Pos.CENTER);
-	        grid.setHgap(10);
-	        grid.setVgap(10);
-	        grid.setPadding(new Insets(25, 25, 25, 25));
-	        Text scenetitle = new Text("Enter Account Number to Open "+formName+" Form");
-	        scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-	        grid.add(scenetitle, 0, 0, 2, 1);
-	        TextField accountNo = new TextField();
-	        grid.add(accountNo, 1, 1);
-	        //--- add switch 
-	        Button btn = new Button("OPEN");
-	        HBox hbBtn = new HBox(10);
-	        hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
-	        hbBtn.getChildren().add(btn);
-	        grid.add(hbBtn, 1, 6);
-	        
-	        //............. button event handler
-	        btn.setOnAction(new EventHandler<ActionEvent>() {
-	       	 
-	            @Override
-	            public void handle(ActionEvent e) {
-	            	//final Scene scene = new Scene(gridLast, 300, 275);
-	            	//primaryStage.setScene(openDetailedForm(primaryStage));
-	            	//primaryStage.show();
-	            	AccountProfile bRecord=new AccountProfile();
-	            	bRecord.setAccountNo(accountNo.getText());
-	            	bRecord.setTransactionActionType(TransactionRecord.ActionType.LOOKUP);
-	            	openAt.installMsg(bRecord);
-	            	openAt.interrupt();
-	            }
-	        });
-	        Scene scene = new Scene(grid, 300, 275);
-	        return scene;        
-		}
 
 }

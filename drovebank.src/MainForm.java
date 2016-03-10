@@ -60,14 +60,20 @@ import javafx.stage.Stage;
 	        VBox vbBtn = new VBox(15);
 	        vbBtn.setAlignment(Pos.CENTER);
 	       
-	        Button btnAccount = new Button("ACCOUNT INFORMATION");	        
-	        btnAccount.setPrefWidth(180);
+	        Button btnAccount = new Button("ACCOUNT INFORMATION");	
+	        btnAccount.setFont(Font.font("Tahoma", FontWeight.BOLD, 16));
+	        btnAccount.setPrefWidth(240);
 	        Button btnMoney = new Button("MONEY TRANSACTION");
-	        btnMoney.setPrefWidth(180);
+	        btnMoney.setFont(Font.font("Tahoma", FontWeight.BOLD, 16));
+	        btnMoney.setPrefWidth(240);
 	        
 	        vbBtn.getChildren().addAll(btnAccount, btnMoney);
 	        grid.add(vbBtn, 0, row+2);
 	        
+	        Button logOutBtn = new Button("Log Out");	
+	        logOutBtn.setFont(Font.font("Tahoma", FontWeight.BOLD, 14));
+	        logOutBtn.setPrefWidth(80);
+	        grid.add(logOutBtn, 2, row+6);
 	        //............. button event handler
 	        btnAccount.setOnAction(new EventHandler<ActionEvent>() {	        	 
 	            @Override
@@ -82,6 +88,14 @@ import javafx.stage.Stage;
 	            public void handle(ActionEvent e) {
 	            	processStatus=true;           	
 	            	nextFormType=Form_Type.TRANSACTION_MAIN;
+	            	app.swapWindow(primaryStage);
+	            }
+	        });
+	        logOutBtn.setOnAction(new EventHandler<ActionEvent>() {	        	 
+	            @Override
+	            public void handle(ActionEvent e) {
+	            	processStatus=true;           	
+	            	nextFormType=Form_Type.LOGIN;
 	            	app.swapWindow(primaryStage);
 	            }
 	        });

@@ -10,8 +10,8 @@ import javafx.stage.Stage;
 
 public class Teller {
 	Teller(){
-		tellerID++;
-		id=tellerID;
+		classStaticID++;
+		id=classStaticID;
 		currentStage=new Stage();
 	}
 	void setMachine(TellerMachine aMachine){
@@ -33,7 +33,7 @@ public class Teller {
 	String password;
 
 		int id;
-		static int tellerID=0;
+		static int classStaticID=0;
 		int userID;
 		TellerMachine myMachine;
 		Stage currentStage;

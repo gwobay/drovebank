@@ -62,15 +62,23 @@ import javafx.stage.Stage;
 	        vbBtn.setAlignment(Pos.CENTER);
 	       
 	        Button btnOpenNew = new Button("CREATE NEW ACCOUNT");	        
-	        btnOpenNew.setPrefWidth(120);
+	         btnOpenNew.setFont(Font.font("Tahoma", FontWeight.THIN, 18));
+	        btnOpenNew.setPrefWidth(240);
 	        Button btnUpdate = new Button("UPDATE CURRENT ACCOUNT");
-	        btnUpdate.setPrefWidth(120);
+	        btnUpdate.setFont(Font.font("Tahoma", FontWeight.THIN, 18));
+	        btnUpdate.setPrefWidth(240);
 	        Button btnShow = new Button("LOCATE CURRENT ACCOUNT");
-	        btnShow.setPrefWidth(120);
-	        
-	        
+	        btnShow.setFont(Font.font("Tahoma", FontWeight.THIN, 18));
+	        btnShow.setPrefWidth(240);
+	        	        
 	        vbBtn.getChildren().addAll(btnOpenNew, btnUpdate, btnShow);
-	        grid.add(vbBtn, 0, row+2);
+	        grid.add(vbBtn, 0, row+1, 2, 1);
+	        
+	        Button back2MainBtn = new Button("Back To Main Form");
+	        back2MainBtn.setFont(Font.font("Tahoma", FontWeight.BOLD, 12));	        
+	        back2MainBtn.setPrefWidth(160);
+	        back2MainBtn.setAlignment(Pos.BOTTOM_RIGHT);
+	        grid.add(back2MainBtn, 1, row+4);
 	        
 	        //............. button event handler
 	        btnOpenNew.setOnAction(new EventHandler<ActionEvent>() {	        	 
@@ -97,7 +105,14 @@ import javafx.stage.Stage;
 	            	app.swapWindow(primaryStage);
 	            }
 	        });
-	        
+	        back2MainBtn.setOnAction(new EventHandler<ActionEvent>() {	        	 
+	            @Override
+	            public void handle(ActionEvent e) {
+	            	processStatus=true;           	
+	            	nextFormType=Form_Type.MAIN;
+	            	app.swapWindow(primaryStage);
+	            }
+	        });
 	        //----------
 	        return grid;
 		}

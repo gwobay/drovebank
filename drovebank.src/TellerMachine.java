@@ -63,138 +63,9 @@ public class TellerMachine extends Thread
 	}
 	
 	
-	public final void processRecord(TransactionRecord aRecord){	
-		/*
-		Stage primaryStage=myStage;
-				lastScene=currentScene;
-				currentForm.setCurrentUser(this);
-				//GridPane parent=currentForm.getGrid(primaryStage);
-				currentScene=setProgressBarScene(myStage);
-				//new Scene(parent, stdWidth, stdHeight);
-				primaryStage.setScene(currentScene);
-				primaryStage.setTitle("Waiting "+currentForm.getName());
-			        //primaryStage.setScene(scene);
-			    primaryStage.show();*/
-			    try {
-			    	//aRecord.setRecordHandler(this);
-			    	aRecord.setMachineId(this);
-					requestBoundMsgQ.put(aRecord);
-					
-					while (respMsgBox.size()<0){
-						sleep(200);
-					}
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (respMsgBox.size()>0){
-						TransactionRecord bRecord=respMsgBox.get(0);
-						TransactionRecord zRecord=null;
-						if (respMsgBox.size()>1)
-							zRecord=respMsgBox.get(1);
-						respMsgBox.clear();
-						if (bRecord.getStatus()==TransactionRecord.TransactionState.FAILED){
-							swapFailedWarning(myStage, bRecord);
-							return;
-						}
-						AccountProfile aProfile=new AccountProfile();
-						aProfile.transactionActionType=TransactionRecord.ActionType.LOOKUP;
-						aProfile.setAccountNo(bRecord.getAccount());
-						aProfile.setMachineId(this);
-						try {
-								requestBoundMsgQ.put(aProfile);
-								while (respMsgBox.size()<0){
-									sleep(200);
-								}
-						} catch (InterruptedException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-						}
-						if (respMsgBox.size()<1) return;
-						bRecord=respMsgBox.get(0);
-						respMsgBox.clear();
-						currentForm.nextFormType=MyFormBuilder.Form_Type.SHOW_ACCOUNT;
-						currentForm.setCurrentRecord(bRecord);
-						/*
-						swapWindow(myStage);
-						*/														
-					}
-		}
 	
-  
 	public final void installMsg(TransactionRecord aRecord){
 		outBox.add(aRecord);
-	}
-	public final void swapFailedWarning(Stage primaryStage, TransactionRecord aRecord){
-		//lastScene=currentScene;
-		currentForm.setCurrentUser(this);
-		//GridPane parent=currentForm.getGrid(primaryStage);
-		currentScene=setWarningScene(primaryStage);//new Scene(parent, stdWidth, stdHeight);
-		primaryStage.setScene(currentScene);
-		primaryStage.setTitle("DroveBank Failed for "+aRecord.toString());
-	        //primaryStage.setScene(scene);
-	    primaryStage.show();
-	}
-	public final void swapWindow(Stage primaryStage){
-	//public void swapWindow(Stage primaryStage){
-				//MyFormBuilder currentForm=new LoginForm();
-		//while (!stopFlag){
-			switch (currentForm.getNextFormType())
-			{
-			case FORM_ANY:
-				break;
-			case LOGIN:
-				currentForm=new LoginForm();
-				break;
-			case MAIN:
-				currentForm=new MainForm();
-				break;
-			case ACCOUNT_MAIN:
-				currentForm=new AccountInfoMainForm();
-				break;
-			case NEW_ACCOUNT:
-				currentForm=new NewAccountForm(machineID);
-				NewAccountForm wkForm=(NewAccountForm)currentForm;
-				wkForm.setAction(NewAccountForm.Form_Action.NEW);
-				break;
-			case SHOW_ACCOUNT:
-				//currentForm=new NewAccountForm();
-				NewAccountForm shForm=(NewAccountForm)currentForm;
-				shForm.setAction(NewAccountForm.Form_Action.SHOW);
-				break;
-			case ACCOUNT_UPDATE:
-				//currentForm=new NewAccountForm();
-				NewAccountForm updForm=(NewAccountForm)currentForm;
-				updForm.setAction(NewAccountForm.Form_Action.UPDATE);
-				break;
-			case TRANSACTION_MAIN:
-				currentForm=new TransactionMainForm();
-				break;
-			case DEPOSIT:
-				currentForm=new DepositForm(currentTeller.getID());
-				break;
-			case SHOW_BALANCE:
-				currentForm=new MainForm();
-				break;
-			case TRANSFER:
-				currentForm=new TransferForm();
-				break;
-			case WITHDRAW:
-				currentForm=new WithdrawForm();
-				break;
-			default:
-				break;
-			}
-			
-			lastScene=currentScene;
-			currentForm.setCurrentUser(this);
-			GridPane parent=currentForm.getGrid(primaryStage);
-			currentScene=new Scene(parent, stdWidth, stdHeight);
-			primaryStage.setScene(currentScene);
-			primaryStage.setTitle("DroveBank "+currentForm.getName());
-		        //primaryStage.setScene(scene);
-		    primaryStage.show();
-		//}
 	}
 	
 	void setStage(Stage primaryStage){
@@ -218,6 +89,7 @@ public class TellerMachine extends Thread
 	}
 	@Override
 	public void run(){
+		/*
 		requestBoundMsgQ=null;
 		
 		stopFlag=false;
@@ -256,7 +128,7 @@ public class TellerMachine extends Thread
 		} 
 		if (outBox != null){
 			outBox=null;
-		}
+		}*/
 	}
 	//private boolean stopFlag;
 	TransactionRecord getCurrentRecord(){

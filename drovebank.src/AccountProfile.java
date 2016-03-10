@@ -43,6 +43,7 @@ public class AccountProfile  extends TransactionRecord  {
 		phone=terms[i++];recordDataMap.put("phone", phone);
 		ssc4=terms[i++];recordDataMap.put("ssc4", ssc4);
 		birthday=terms[i++];recordDataMap.put("birthday", birthday);
+		createDateTime=terms[i++];recordDataMap.put("createDateTime", createDateTime);
 		lastDate=terms[i++];recordDataMap.put("lastDate", lastDate);
 		lastTime=terms[i++];recordDataMap.put("lastTime", lastTime);
 		balance=Double.parseDouble(terms[i]);	recordDataMap.put("balance", terms[i]);	
@@ -66,7 +67,7 @@ public class AccountProfile  extends TransactionRecord  {
 	public String toString(){
 		String retS=accountNo+fieldDelm+firstName+fieldDelm+lastName+fieldDelm+addr1+fieldDelm+addr2+fieldDelm;
 		retS += (city+fieldDelm+state+fieldDelm+zip+fieldDelm+phone+fieldDelm+ssc4+fieldDelm+birthday+fieldDelm);
-		retS += (lastDate+fieldDelm+lastTime+fieldDelm+dF.format(balance));
+		retS += (createDateTime+fieldDelm+lastDate+fieldDelm+lastTime+fieldDelm+dF.format(balance));
 		return retS;
 	}
 	
@@ -143,6 +144,13 @@ Therefore, Romeo can cuddle Juliet and only he can because only he can construct
 	public void setAccountNo(String acctNo){
 		accountNo=acctNo;
 	}
+	
+	public String getAccountName(){
+		return firstName+" "+lastName;
+	}
+	public void setCreateDateTime(String dateTime1){
+		createDateTime=dateTime1;
+	}
 		private
 			String accountNo;			
 			double balance;
@@ -164,6 +172,7 @@ Therefore, Romeo can cuddle Juliet and only he can because only he can construct
 			String phone;
 			String ssc4;
 			String birthday;
+			String createDateTime;
 			NewAccountForm currentForm;
 			
 			public void setCurrentForm(NewAccountForm currentForm1){
@@ -189,6 +198,8 @@ Therefore, Romeo can cuddle Juliet and only he can because only he can construct
 				recordDataMap.put("phone", phone);
 				recordDataMap.put("ssc4", ssc4);
 				recordDataMap.put("birthday", birthday);
+				recordDataMap.put("createDateTime", createDateTime);
+
 				recordDataMap.put("lastDate", lastDate);
 				recordDataMap.put("lastTime", lastTime);	
 				recordDataMap.put("balance", dF.format(balance));	

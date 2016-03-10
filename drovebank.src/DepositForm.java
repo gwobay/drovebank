@@ -29,9 +29,9 @@ public class DepositForm extends MoneyTransactionForm {
 	public String getName(){
 		return myName;
 	}
-	public static enum Form_Action {NEW, UPDATE, SHOW};
 	static final String[][] fields={
-			{"accountNo", DataType.STRING}, 
+			{"accountNo", DataType.STRING},
+			{"accountName" , DataType.STRING},
 			{"action", DataType.STRING},
 			{"amount", DataType.DOUBLE}, 
 			{"date",  DataType.STRING},
@@ -111,7 +111,7 @@ public class DepositForm extends MoneyTransactionForm {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-        Text scenetitle = new Text("Welcome "+formName+" Customer");
+        Text scenetitle = new Text("Welcome "+formTitleMsg);
         scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         grid.add(scenetitle, 0, 0, 2, 1);
         /*
@@ -132,6 +132,24 @@ public class DepositForm extends MoneyTransactionForm {
 			nameLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
 			//grid.add(nameLabel, 0, iRow);
 			
+			if (ss.equalsIgnoreCase("accountName")){
+				
+				Label nameLabeNm = new Label(accountName);
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				hBox.getChildren().addAll(nameLabel, nameLabeNm);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
+			if (ss.equalsIgnoreCase("action")){
+				
+				Label nameLabeNm = new Label(" DEPOSIT");
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				hBox.getChildren().addAll(nameLabel, nameLabeNm);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
 			TextField nameField = new TextField();       
 			//grid.add(nameField, 1, iRow, 2, iRow); 
 			
@@ -172,6 +190,7 @@ public class DepositForm extends MoneyTransactionForm {
         HBox hbBtn = new HBox(0);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbBtn.getChildren().add(actBtn);
+        if (action!=Form_Action.SHOW)
         grid.add(hbBtn, 2, iRow+4);
         Button closeBtn = new Button("Close");
         HBox hCbBtn = new HBox(0);
@@ -188,7 +207,8 @@ public class DepositForm extends MoneyTransactionForm {
             	app.swapWindow(primaryStage);
             }
         });
-        if (action==Form_Action.SHOW)
+        if (action!=Form_Action.SHOW)
+        	/*
         actBtn.setOnAction(new EventHandler<ActionEvent>() {	        	 
             @Override
             public void handle(ActionEvent e) {
@@ -197,7 +217,7 @@ public class DepositForm extends MoneyTransactionForm {
             	app.swapWindow(primaryStage);
             }
         });
-        else
+        else*/
         actBtn.setOnAction(new EventHandler<ActionEvent>() {	        	 
             @Override
             public void handle(ActionEvent e) {
@@ -292,9 +312,7 @@ public class DepositForm extends MoneyTransactionForm {
 	TransactionStruct getDepositSlip(){
 		return deposit_slip;
 	}
-	void setAction(Form_Action act){
-		action=act;
-	}
+	
 	@Override
 	public TransactionRecord saveDataToRecord(){
 		TransactionStruct aDeposit=null;
@@ -373,11 +391,12 @@ public class DepositForm extends MoneyTransactionForm {
 		deposit_slip=aDeposit;
 		return aDeposit;
 	}
+	
 	private 
 	String accountNo;
 	private TransactionStruct deposit_slip;
 	private AccountProfile customer;
 	double amount;
 	double lastBalance;
-	Form_Action action;
+	
 }

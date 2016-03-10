@@ -86,7 +86,7 @@ public class TransactionStruct extends TransactionRecord {
 	}
 	public String toString(){
 		String actionS="DEPOSIT";
-		if (reason.charAt(0) > ' '){
+		if (reason.length()>1 && reason.charAt(0) > ' '){
 			if (action==Action.WITHDRAW) actionS="TRANSFER TO ";
 			else actionS="TRANSFER FROM ";
 		}

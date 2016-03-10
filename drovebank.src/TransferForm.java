@@ -31,7 +31,6 @@ public class TransferForm extends MoneyTransactionForm {
 	final DecimalFormat dI=new DecimalFormat("00");
 	final DecimalFormat dF=new DecimalFormat("0.00");
 
-	public static enum Form_Action {NEW, UPDATE, SHOW};
 	static final String[][] fields={
 			{"accountNo", DataType.STRING}, 
 			
@@ -284,9 +283,7 @@ public class TransferForm extends MoneyTransactionForm {
 	TransactionStruct getDepositSlip(){
 		return deposit_slip;
 	}
-	void setAction(Form_Action act){
-		action=act;
-	}
+	
 	@Override
 	public TransactionRecord saveDataToRecord(){
 		TransactionStruct aDeposit=null;
@@ -325,5 +322,4 @@ public class TransferForm extends MoneyTransactionForm {
 	private AccountProfile customer;
 	double amount;
 	double lastBalance;
-	Form_Action action;
 }
