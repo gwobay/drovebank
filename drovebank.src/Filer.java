@@ -81,6 +81,7 @@ public class Filer extends Thread {
 		try {			
 			aReader=new BufferedReader(new FileReader(readFrom));
 			while ((aLine=aReader.readLine()) != null){
+				if (aLine.length()<20) continue;
 				AccountProfile aCust=new AccountProfile(aLine);
 				allAccount.put(aCust.getAccount(), aCust);
 			}

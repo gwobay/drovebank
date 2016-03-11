@@ -17,14 +17,18 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.scene.control.Separator;
+import javafx.geometry.HPos;
 
 public class TransferForm extends MoneyTransactionForm {
 	
 	final private String myName="TransferForm";
+	@Override
 	public String getName(){
 		return myName;
 	}
@@ -32,18 +36,24 @@ public class TransferForm extends MoneyTransactionForm {
 	final DecimalFormat dF=new DecimalFormat("0.00");
 
 	static final String[][] fields={
-			{"accountNo", DataType.STRING}, 
+			{"sendingAccountNo", DataType.STRING}, 
 			
 			{"amount", DataType.DOUBLE},
 			
-			{"date",  DataType.STRING},
-			{"time",  DataType.STRING},
-			{"balance", DataType.DOUBLE},
+			{"availableBalance", DataType.DOUBLE},
+			{"sendSideOldBalance", DataType.DOUBLE},
+			
+			{"recevingAccountNo", DataType.STRING}, 
+			
+			{"currentBalance", DataType.DOUBLE},
+			{"beforeReceivedBalance", DataType.DOUBLE},
 			
 			{"processedBy",  DataType.INTEGER},
-			{"receiving_account", DataType.STRING},
+			{"date",  DataType.STRING},
+			{"time",  DataType.STRING},
+
 			{"confirmedBy", DataType.INTEGER},
-			};
+		};
 	TransferForm(){
 		super();
 		currentFormType=Form_Type.TRANSFER;
@@ -61,40 +71,34 @@ public class TransferForm extends MoneyTransactionForm {
 	}
 	@Override
 	GridPane getGrid(Stage primaryStage){
-		//if (currentRecord==null)
-			//currentRecord=new TransactionStruct();
-		//the account no should be available before reach here
 		double lastBalance=0;
-		if (currentRecord.getTransactionType()==TransactionRecord.Type.PROFILE){
-			customer=(AccountProfile) currentRecord;
-			currentRecord=new TransactionStruct(filledBy);
-			currentRecord.setAccountNo(customer.getAccount());
-			lastBalance=customer.balance;
-		}
-		((TransactionStruct)currentRecord).setCurrentForm(this);
-		final HashMap<String, String> dataMap=new HashMap<String, String>();
-					//currentRecord.getRecordDataMap();
-		/*
-		 */
+		HashMap<String, String> dataMap=new HashMap<String, String>();//currentRecord.getRecordDataMap();
 		String formName="NEW";
-        if (action != null && action!=Form_Action.NEW) {
-        	formName="DEAR";
-        }
-        else {
-    		Calendar cal=GregorianCalendar.getInstance();
-    		String date=dI.format(cal.get(Calendar.MONTH))+"/"+dI.format(cal.get(Calendar.DATE))+"/"+dI.format(cal.get(Calendar.YEAR));
-    		String time=dI.format(cal.get(Calendar.HOUR))+":"+dI.format(cal.get(Calendar.MINUTE))+":"+dI.format(cal.get(Calendar.SECOND));
-        	dataMap.put("accountNo", currentRecord.getAccount());
-        	dataMap.put("action", "TRANSFER");
+    	final AccountProfile sRecord=(AccountProfile)sendingAccountRecord;
+    	final AccountProfile rRecord=(AccountProfile)receivingAccountRecord;
+
+        boolean notNew= (action != null && action!=Form_Action.NEW);
+       	/*
+        	dataMap.put("sendingAccountNo", sRecord.getAccount());
+        	dataMap.put("availableBalance", dF.format(sRecord.balance));
+        	dataMap.put("sendSideOldBalance", dF.format(sRecord.lastBalance));
+        	
+        	dataMap.put("sendingAccountNo", sRecord.getAccount());
+        	dataMap.put("sendingAccountNo", sRecord.getAccount());
+        	dataMap.put("recevingAccountNo", rRecord.getAccount());
+        	dataMap.put("action", "WITHDRAW");
         	dataMap.put("amount", "0"); 
 			dataMap.put("date",  date);
 			dataMap.put("time",  time);
 			dataMap.put("balance", dF.format(customer.balance));
 			dataMap.put("lastBalance",  dF.format(customer.lastBalance));
 			dataMap.put("processedBy",  dI.format(app.getCurrentUser().userID));
-			dataMap.put("receiving_account", "");
+			dataMap.put("reason", "");
 			dataMap.put("confirmedBy", "");
-        }
+			currentRecord.setTransactionActionType(TransactionRecord.ActionType.NEW);
+			currentRecord.setTransactionType(TransactionRecord.Type.TRANSACTION);
+			*/
+      
 		 //---build content
         GridPane grid = new GridPane();
         //----- content detail ---------------
@@ -102,7 +106,7 @@ public class TransferForm extends MoneyTransactionForm {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-        Text scenetitle = new Text("Welcome "+formName+" Customer");
+        Text scenetitle = new Text("Welcome "+((AccountProfile)sRecord).getAccountName());
         scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         grid.add(scenetitle, 0, 0, 2, 1);
         /*
@@ -110,51 +114,85 @@ public class TransferForm extends MoneyTransactionForm {
         dataHint.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
         grid.add(dataHint, 0, 2, 2, 3);
         */
-
+        
+        Text dividerSend = new Text("----Send side info :"+((AccountProfile)sRecord).getAccountName());
+        dividerSend.setFont(Font.font("Tahoma", FontWeight.NORMAL, 16));
+        grid.add(dividerSend, 0, 1, 2, 1);
         //int iCol=0;
-        int iRow=2;
-		for (int i=0; i<fields.length; i++){
-			String ss=fields[i][0];
+        int iSectionRow=2;
+        int iRow=1;
+		//for (int i=0; i<fields.length; i++){
+			//String ss=fields[i][0];
 			
-			HBox hBox = new HBox(0);
+			VBox hBox = new VBox(10);
 			hBox.setAlignment(Pos.CENTER_LEFT);//CENTER);
 	        
-			Label nameLabel = new Label(ss+":");
-			nameLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
-			//grid.add(nameLabel, 0, iRow);
-			
-			TextField nameField = new TextField();       
-			//grid.add(nameField, 1, iRow, 2, iRow); 
-			
-			nameField.focusedProperty().addListener(new ChangeListener<Boolean>(){ 
-				@Override
-				public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) {
-					// TODO Auto-generated method stub
-					String upper=nameField.getText();
-					dataMap.put(ss,  upper);
-					if (upper != null && upper.length() > 0) {
-					dataMap.put(ss,  upper.toUpperCase());
-					nameField.setText(upper.toUpperCase());
-					}
-				}
-			});
-			String data=dataMap.get(ss);
-			if (data != null) nameField.setText(data);
-			nameField.setId(ss);
-			
-			if (ss.equalsIgnoreCase("accountNo"))
-			{
-				String acctno=currentRecord.getAccount();
-				if (acctno != null){
-				nameField.setText(acctno);
-				nameField.setFont(Font.font("Tahoma", FontWeight.BOLD, 14));
-				nameField.setEditable(false);
-				}
+			Label sendAcctNoLabel = new Label("Sending Side AccountNo : "+sRecord.getAccount());
+			sendingRecord.setAccountNo(sRecord.getAccount());
+			sendAcctNoLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 18));
+			hBox.getChildren().add(sendAcctNoLabel);
+			iRow++;
+			Label sendSideBalanceLabel = new Label("Available Balance : "+dF.format(sRecord.balance));
+			sendSideBalanceLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 18));
+			hBox.getChildren().add(sendSideBalanceLabel);
+			iRow++;
+			if (notNew){
+			Label sendSideLastBalanceLabel = new Label("Old Balance : "+dF.format(sRecord.lastBalance));
+			sendSideLastBalanceLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 18));
+			hBox.getChildren().add(sendSideLastBalanceLabel);
+			iRow++;
 			}
-			hBox.getChildren().addAll(nameLabel, nameField);
-			grid.add(hBox, 0, iRow);
-			iRow += 2;//++;			
-		}
+			
+			final Separator separator = new Separator();                       
+			separator.setMaxWidth(120);
+			separator.setHalignment(HPos.CENTER);
+			hBox.getChildren().add(separator);
+			iRow++;
+			grid.add(hBox, 0, iSectionRow);
+			iSectionRow += iRow;
+			//grid.add(nameLabel, 0, iRow);
+			HBox hAmtBox = new HBox(0);
+			Label valueLabe = new Label("Amount to Transfer:");
+				valueLabe.setFont(Font.font("Tahoma", FontWeight.BOLD, 18));	
+			TextField amountField = new TextField();       
+				//grid.add(nameField, 1, iRow, 2, iRow); 
+				
+			hAmtBox.getChildren().addAll(valueLabe, amountField);
+			grid.add(hAmtBox, 0, iSectionRow);
+			
+			iSectionRow += 2;
+			
+			Text dividerRecv = new Text("----Receive Side Info :"+((AccountProfile)rRecord).getAccountName());
+			dividerRecv.setFont(Font.font("Tahoma", FontWeight.BOLD, 18));
+	        grid.add(dividerRecv, 0, iSectionRow, 2, 1);
+	        
+			VBox hRBox = new VBox(0);
+			hRBox.setAlignment(Pos.CENTER_LEFT);//CENTER);
+	        
+			Label recvAcctNoLabel = new Label("Receiving Side AccountNo : "+rRecord.getAccount());
+			receivingRecord.setAccountNo(rRecord.getAccount());
+			recvAcctNoLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 18));
+			hRBox.getChildren().add(recvAcctNoLabel);
+			iRow++;
+			Label recvSideBalanceLabel = new Label("Cummulated Balance : "+dF.format(rRecord.balance));
+			recvSideBalanceLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 18));
+			hRBox.getChildren().add(recvSideBalanceLabel);
+			iRow++;
+			if (notNew){
+			Label recvLastBalanceLabel = new Label("Previous Balance : "+dF.format(rRecord.lastBalance));
+			recvLastBalanceLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 18));
+			hRBox.getChildren().add(recvLastBalanceLabel);
+			iRow++;
+			}
+			
+			//final Separator separator = new Separator();                       
+			//separator.setMaxWidth(120);
+			//separator.setHalignment(HPos.CENTER);
+			hRBox.getChildren().add(separator);
+			iRow++;
+			grid.add(hRBox, 0, iSectionRow+2);
+			
+			
 		String actName="Do-It!";
         if (action==Form_Action.UPDATE)  actName="Update";
         else if (action==Form_Action.SHOW) actName="Confirm";
@@ -163,6 +201,7 @@ public class TransferForm extends MoneyTransactionForm {
         HBox hbBtn = new HBox(0);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbBtn.getChildren().add(actBtn);
+        if (action!=Form_Action.SHOW)
         grid.add(hbBtn, 2, iRow+4);
         Button closeBtn = new Button("Close");
         HBox hCbBtn = new HBox(0);
@@ -179,7 +218,8 @@ public class TransferForm extends MoneyTransactionForm {
             	app.swapWindow(primaryStage);
             }
         });
-        if (action==Form_Action.SHOW)
+        if (action!=Form_Action.SHOW)
+        	/*
         actBtn.setOnAction(new EventHandler<ActionEvent>() {	        	 
             @Override
             public void handle(ActionEvent e) {
@@ -188,12 +228,32 @@ public class TransferForm extends MoneyTransactionForm {
             	app.swapWindow(primaryStage);
             }
         });
-        else
+        else*/
         actBtn.setOnAction(new EventHandler<ActionEvent>() {	        	 
             @Override
             public void handle(ActionEvent e) {
+        		Calendar cal=GregorianCalendar.getInstance();
+        		String date=dI.format(cal.get(Calendar.MONTH))+"/"+dI.format(cal.get(Calendar.DATE))+"/"+dI.format(cal.get(Calendar.YEAR));
+        		String time=dI.format(cal.get(Calendar.HOUR))+":"+dI.format(cal.get(Calendar.MINUTE))+":"+dI.format(cal.get(Calendar.SECOND));
+
             	TransactionRecord bRecord=app.currentForm.saveDataToRecord();
             	app.sendTransactionAndWaitForResponse(primaryStage, bRecord);
+            	TransactionRecord[] aRecord=new TransactionStruct[2];
+            	aRecord[0]=sendingRecord;
+            	aRecord[1]=receivingRecord;
+            	sendingRecord.setTransactionActionType(TransactionRecord.ActionType.NEW);
+            	sendingRecord.setTransactionType(TransactionRecord.Type.TRANSACTION);
+            	((TransactionStruct)sendingRecord).setAction(TransactionStruct.Action.WITHDRAW);
+            	((TransactionStruct)sendingRecord).setAmount(Double.parseDouble(amountField.getText()));
+            	((TransactionStruct)sendingRecord).date=date;
+            	((TransactionStruct)sendingRecord).time=time;
+            	receivingRecord.setTransactionActionType(TransactionRecord.ActionType.NEW);
+            	receivingRecord.setTransactionType(TransactionRecord.Type.TRANSACTION);
+            	((TransactionStruct)receivingRecord).setAction(TransactionStruct.Action.DEPOSIT);
+            	((TransactionStruct)receivingRecord).setAmount(Double.parseDouble(amountField.getText()));          
+            	((TransactionStruct)receivingRecord).date=date;
+            	((TransactionStruct)receivingRecord).time=time;
+            	app.sendTransactionsAndWaitForResponse(primaryStage, aRecord);	
             }
         });
         
@@ -277,24 +337,64 @@ public class TransferForm extends MoneyTransactionForm {
 	AccountProfile getCurrentProfile(){
 		return customer;
 	}
-	void setDepositData(TransactionStruct aDeposit){
-		deposit_slip=aDeposit;
-	}
-	TransactionStruct getDepositSlip(){
-		return deposit_slip;
-	}
-	
+
 	@Override
 	public TransactionRecord saveDataToRecord(){
 		TransactionStruct aDeposit=null;
-		
+		//new TransactionStruct();
+		/*
+		for (int i=0; i<fields.length; i++){
+			String which1=fields[i][0];
+			Node node = parent.lookup("#"+which1);				
+			if (node == null ) continue;
+			switch (which1){
+			case "accountNo":
+				aProfile.setAccountNo(((TextField)node).getText()) ;
+				break;
+			case "firstName":
+				aProfile.setFirstName(((TextField)node).getText()) ;
+				break;
+			case "lastName":
+				aProfile.setLastName(((TextField)node).getText()) ;
+				break;
+			case "addr1":
+				aProfile.setAddr1(((TextField)node).getText()) ;
+				break;
+			case "addr2":
+				aProfile.setAddr2(((TextField)node).getText()) ;
+				break;
+			case "city":
+				aProfile.setCity(((TextField)node).getText()) ;
+				break;
+			case "state":
+				aProfile.setState(((TextField)node).getText()) ;
+				break;
+			case "zip":
+				aProfile.setZip(((TextField)node).getText()) ;
+				break;
+			case "phone":
+				aProfile.setPhone(((TextField)node).getText()) ;
+				break;
+			case "ssc4":
+				aProfile.setSSC(((TextField)node).getText()) ;
+				break;
+			case "birthday":
+				aProfile.setBirthday(((TextField)node).getText()) ;
+				break;
+			case "balance":
+				aProfile.setBalance(Double.parseDouble(((TextField)node).getText())) ;
+				break;
+			default:
+				break;
+			}			
+		}*/
 		HashMap<String, String> recordDataMap=currentRecord.getRecordDataMap();
 		String tmp=recordDataMap.get("processedBy");
 		int ii =0;
 		if (tmp != null && tmp.length()>0) ii=Integer.parseInt(tmp);
 			
-		aDeposit=new TransactionStruct(ii);
-		aDeposit.setAccountNo(currentRecord.getAccount());
+		aDeposit=(TransactionStruct)currentRecord;//new TransactionStruct(ii);
+		//aDeposit.setAccountNo(currentRecord.getAccount());
 		
 		aDeposit.date=recordDataMap.get("date");
 		aDeposit.time=recordDataMap.get("time");
@@ -312,14 +412,43 @@ public class TransferForm extends MoneyTransactionForm {
 			aDeposit.balance=Double.parseDouble(tmp);
 		else aDeposit.balance=0;
 		aDeposit.setTransactionActionType(TransactionRecord.ActionType.NEW);
-		aDeposit.setAction(TransactionStruct.Action.TRANSFER);
-		deposit_slip=aDeposit;
+		aDeposit.setAction(TransactionStruct.Action.DEPOSIT);
+		//deposit_slip=aDeposit;
+		currentRecord=aDeposit;
 		return aDeposit;
 	}
-	private 
-	String accountNo;
-	private TransactionStruct deposit_slip;
-	private AccountProfile customer;
+	public void setSendingRecord(TransactionRecord aRec){
+		sendingRecord=aRec;
+	}
+	//actually this should be the currentRecord
+	public TransactionRecord getSendingRecord(){
+		return sendingRecord;
+	}
+	public void setReceivingRecord(TransactionRecord aRec){
+		receivingRecord=aRec;
+	}
+	public TransactionRecord getReceivingRecord(){
+		return receivingRecord;
+	}
+	public void setSendingAccountRecord(TransactionRecord aRec){
+		sendingAccountRecord=aRec;
+	}
+	//actually this should be the currentRecord
+	public TransactionRecord getSendingAccountRecord(){
+		return sendingAccountRecord;
+	}
+	public void setReceivingAccountRecord(TransactionRecord aRec){
+		receivingAccountRecord=aRec;
+	}
+	public TransactionRecord getReceivingAccountRecord(){
+		return receivingAccountRecord;
+	}
+	TransactionRecord sendingRecord;	
+	TransactionRecord receivingRecord;
+	TransactionRecord sendingAccountRecord;	
+	TransactionRecord receivingAccountRecord;
+	
 	double amount;
 	double lastBalance;
+
 }

@@ -13,8 +13,24 @@ public class MoneyTransactionForm extends MyFormBuilder {
 	public void setFormAction(Form_Action nm){
 		action=nm;
 	}
+	protected String accountNo;
 	protected String accountName;
+	
+	public void setAccountNo(String nm){
+		accountNo=nm;
+	}
 	public void setAccountName(String nm){
 		accountName=nm;
 	}
+	public void setCustomer(AccountProfile customer1){
+		customer=customer1;
+	}
+	public void setAccountNo(){
+		accountNo=customer.getAccount();
+	}
+	public void setAccountName(){
+		accountName=customer.getAccountName();
+	}
+protected 
+	AccountProfile customer;
 }

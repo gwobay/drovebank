@@ -1,6 +1,5 @@
 import java.text.DecimalFormat;
-	//import java.util.Calendar;
-	//import java.util.GregorianCalendar;
+
 import java.util.HashMap;
 
 
@@ -210,5 +209,23 @@ Therefore, Romeo can cuddle Juliet and only he can because only he can construct
 			public void setTransactionType(Type ty) {
 				// TODO Auto-generated method stub
 				transactionType=ty;//Type.PROFILE;
+			}
+			@Override 
+			public String printType(){
+				String actS="NEW";
+				switch (transactionActionType){
+				case UPDATE:
+					actS="UPDATE";
+					break;
+				case LOOKUP:
+					actS="LOOKUP";
+					break;
+				default:
+					break;
+				}
+				return 
+				//myLogger.info
+						(actS+" Profile");
+				
 			}
 }

@@ -1,4 +1,5 @@
 import java.awt.Point;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,6 +29,9 @@ public abstract class MyFormBuilder {
 	}
 
 	protected static enum Field_Type {DOUBLE, INTEGER, STRING};
+	
+	public final static DecimalFormat dF=new DecimalFormat("0.00");
+	public final static DecimalFormat dI=new DecimalFormat("00");
 	
 	protected Scene openDetailedForm(Stage primaryStage){
 		return null;
@@ -148,6 +152,9 @@ public abstract class MyFormBuilder {
 		public Point getFormGridDimension(){
 			return formGridDimension;
 		}
+		public void printType(){}
+		public void printAction(){}
+
 	protected
 	enum Mode {READ_ONLY, READ_WRITE};
 

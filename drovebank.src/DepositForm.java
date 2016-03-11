@@ -26,6 +26,7 @@ import javafx.stage.Stage;
 
 public class DepositForm extends MoneyTransactionForm {
 	final private String myName="DepositForm";
+	@Override
 	public String getName(){
 		return myName;
 	}
@@ -63,12 +64,15 @@ public class DepositForm extends MoneyTransactionForm {
 			//currentRecord=new TransactionStruct();
 		//the account no should be available before reach here
 		double lastBalance=0;
+		/*
 		if (currentRecord.getTransactionType()==TransactionRecord.Type.PROFILE){
 			customer=(AccountProfile) currentRecord;
 			currentRecord=new TransactionStruct(filledBy);
 			currentRecord.setAccountNo(customer.getAccount());
 			lastBalance=customer.balance;
-		}
+		}*/
+		setAccountNo();
+		setAccountName();
 		((TransactionStruct)currentRecord).setCurrentForm(this);
 		final HashMap<String, String> dataMap=currentRecord.getRecordDataMap();
 		/*
@@ -103,6 +107,8 @@ public class DepositForm extends MoneyTransactionForm {
 			dataMap.put("processedBy",  dI.format(app.getCurrentUser().userID));
 			dataMap.put("reason", "");
 			dataMap.put("confirmedBy", "");
+			currentRecord.setTransactionActionType(TransactionRecord.ActionType.NEW);
+			currentRecord.setTransactionType(TransactionRecord.Type.TRANSACTION);
         }
 		 //---build content
         GridPane grid = new GridPane();
@@ -131,7 +137,15 @@ public class DepositForm extends MoneyTransactionForm {
 			Label nameLabel = new Label(ss+":");
 			nameLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
 			//grid.add(nameLabel, 0, iRow);
-			
+			if (ss.equalsIgnoreCase("accountNo")){
+				
+				Label valueLabe = new Label(accountNo);
+				valueLabe.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				hBox.getChildren().addAll(nameLabel, valueLabe);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
 			if (ss.equalsIgnoreCase("accountName")){
 				
 				Label nameLabeNm = new Label(accountName);
@@ -144,6 +158,15 @@ public class DepositForm extends MoneyTransactionForm {
 			if (ss.equalsIgnoreCase("action")){
 				
 				Label nameLabeNm = new Label(" DEPOSIT");
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				hBox.getChildren().addAll(nameLabel, nameLabeNm);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
+			if (ss.equalsIgnoreCase("balance")){
+				
+				Label nameLabeNm = new Label(dF.format(customer.balance));
 				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
 				hBox.getChildren().addAll(nameLabel, nameLabeNm);
 				grid.add(hBox, 0, iRow);
@@ -306,13 +329,7 @@ public class DepositForm extends MoneyTransactionForm {
 	AccountProfile getCurrentProfile(){
 		return customer;
 	}
-	void setDepositData(TransactionStruct aDeposit){
-		deposit_slip=aDeposit;
-	}
-	TransactionStruct getDepositSlip(){
-		return deposit_slip;
-	}
-	
+
 	@Override
 	public TransactionRecord saveDataToRecord(){
 		TransactionStruct aDeposit=null;
@@ -368,8 +385,8 @@ public class DepositForm extends MoneyTransactionForm {
 		int ii =0;
 		if (tmp != null && tmp.length()>0) ii=Integer.parseInt(tmp);
 			
-		aDeposit=new TransactionStruct(ii);
-		aDeposit.setAccountNo(currentRecord.getAccount());
+		aDeposit=(TransactionStruct)currentRecord;//new TransactionStruct(ii);
+		//aDeposit.setAccountNo(currentRecord.getAccount());
 		
 		aDeposit.date=recordDataMap.get("date");
 		aDeposit.time=recordDataMap.get("time");
@@ -388,14 +405,12 @@ public class DepositForm extends MoneyTransactionForm {
 		else aDeposit.balance=0;
 		aDeposit.setTransactionActionType(TransactionRecord.ActionType.NEW);
 		aDeposit.setAction(TransactionStruct.Action.DEPOSIT);
-		deposit_slip=aDeposit;
+		//deposit_slip=aDeposit;
+		currentRecord=aDeposit;
 		return aDeposit;
 	}
 	
-	private 
-	String accountNo;
-	private TransactionStruct deposit_slip;
-	private AccountProfile customer;
+	
 	double amount;
 	double lastBalance;
 	

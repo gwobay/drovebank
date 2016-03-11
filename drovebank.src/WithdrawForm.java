@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 public class WithdrawForm extends MoneyTransactionForm {
 	
 	final private String myName="WithdrawForm";
+	@Override
 	public String getName(){
 		return myName;
 	}
@@ -44,18 +45,18 @@ public class WithdrawForm extends MoneyTransactionForm {
 			};
 	private WithdrawForm(){
 		super();
-		currentFormType=Form_Type.DEPOSIT;
-		nextFormType=Form_Type.DEPOSIT;;//Form_Type.NEW_ACCOUNT_READ_ONLY;
-		formName="DEPOSIT";
+		currentFormType=Form_Type.WITHDRAW;
+		nextFormType=Form_Type.WITHDRAW;;//Form_Type.NEW_ACCOUNT_READ_ONLY;
+		formName="WITHDRAW";
 	}
 	WithdrawForm(int tellerID){
 		super();
 		filledBy=tellerID;
-		currentFormType=Form_Type.DEPOSIT;
-		nextFormType=Form_Type.DEPOSIT;;//Form_Type.NEW_ACCOUNT_READ_ONLY;
+		currentFormType=Form_Type.WITHDRAW;
+		nextFormType=Form_Type.WITHDRAW;;//Form_Type.NEW_ACCOUNT_READ_ONLY;
 		currentRecord=new TransactionStruct(tellerID);
 		customer=new AccountProfile();
-		formName="DEPOSIT";
+		formName="WITHDRAW";
 	}
 	@Override
 	GridPane getGrid(Stage primaryStage){
@@ -63,12 +64,15 @@ public class WithdrawForm extends MoneyTransactionForm {
 			//currentRecord=new TransactionStruct();
 		//the account no should be available before reach here
 		double lastBalance=0;
+		/*
 		if (currentRecord.getTransactionType()==TransactionRecord.Type.PROFILE){
 			customer=(AccountProfile) currentRecord;
 			currentRecord=new TransactionStruct(filledBy);
 			currentRecord.setAccountNo(customer.getAccount());
 			lastBalance=customer.balance;
-		}
+		}*/
+		setAccountNo();
+		setAccountName();
 		((TransactionStruct)currentRecord).setCurrentForm(this);
 		final HashMap<String, String> dataMap=currentRecord.getRecordDataMap();
 		/*
@@ -103,6 +107,8 @@ public class WithdrawForm extends MoneyTransactionForm {
 			dataMap.put("processedBy",  dI.format(app.getCurrentUser().userID));
 			dataMap.put("reason", "");
 			dataMap.put("confirmedBy", "");
+			currentRecord.setTransactionActionType(TransactionRecord.ActionType.NEW);
+			currentRecord.setTransactionType(TransactionRecord.Type.TRANSACTION);
         }
 		 //---build content
         GridPane grid = new GridPane();
@@ -131,7 +137,15 @@ public class WithdrawForm extends MoneyTransactionForm {
 			Label nameLabel = new Label(ss+":");
 			nameLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
 			//grid.add(nameLabel, 0, iRow);
-			
+			if (ss.equalsIgnoreCase("accountNo")){
+				
+				Label valueLabe = new Label(accountNo);
+				valueLabe.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				hBox.getChildren().addAll(nameLabel, valueLabe);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
 			if (ss.equalsIgnoreCase("accountName")){
 				
 				Label nameLabeNm = new Label(accountName);
@@ -143,7 +157,25 @@ public class WithdrawForm extends MoneyTransactionForm {
 			}
 			if (ss.equalsIgnoreCase("action")){
 				
-				Label nameLabeNm = new Label(" DEPOSIT");
+				Label nameLabeNm = new Label(" WITHDRAW");
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				hBox.getChildren().addAll(nameLabel, nameLabeNm);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
+			if (ss.equalsIgnoreCase("balance")){
+				
+				Label nameLabeNm = new Label(dF.format(customer.balance));
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				hBox.getChildren().addAll(nameLabel, nameLabeNm);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
+			if (ss.equalsIgnoreCase("lastBalance")){
+				
+				Label nameLabeNm = new Label(dF.format(customer.lastBalance));
 				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
 				hBox.getChildren().addAll(nameLabel, nameLabeNm);
 				grid.add(hBox, 0, iRow);
@@ -306,13 +338,7 @@ public class WithdrawForm extends MoneyTransactionForm {
 	AccountProfile getCurrentProfile(){
 		return customer;
 	}
-	void setDepositData(TransactionStruct aDeposit){
-		deposit_slip=aDeposit;
-	}
-	TransactionStruct getDepositSlip(){
-		return deposit_slip;
-	}
-	
+
 	@Override
 	public TransactionRecord saveDataToRecord(){
 		TransactionStruct aDeposit=null;
@@ -368,8 +394,8 @@ public class WithdrawForm extends MoneyTransactionForm {
 		int ii =0;
 		if (tmp != null && tmp.length()>0) ii=Integer.parseInt(tmp);
 			
-		aDeposit=new TransactionStruct(ii);
-		aDeposit.setAccountNo(currentRecord.getAccount());
+		aDeposit=(TransactionStruct)currentRecord;//new TransactionStruct(ii);
+		//aDeposit.setAccountNo(currentRecord.getAccount());
 		
 		aDeposit.date=recordDataMap.get("date");
 		aDeposit.time=recordDataMap.get("time");
@@ -387,15 +413,13 @@ public class WithdrawForm extends MoneyTransactionForm {
 			aDeposit.balance=Double.parseDouble(tmp);
 		else aDeposit.balance=0;
 		aDeposit.setTransactionActionType(TransactionRecord.ActionType.NEW);
-		aDeposit.setAction(TransactionStruct.Action.DEPOSIT);
-		deposit_slip=aDeposit;
+		aDeposit.setAction(TransactionStruct.Action.WITHDRAW);
+		//deposit_slip=aDeposit;
+		currentRecord=aDeposit;
 		return aDeposit;
 	}
 	
-	private 
-	String accountNo;
-	private TransactionStruct deposit_slip;
-	private AccountProfile customer;
+	
 	double amount;
 	double lastBalance;
 

@@ -32,7 +32,8 @@ public class NewAccountForm extends MyFormBuilder {
 	public static enum Form_Action {NEW, UPDATE, SHOW};
 	
 	static final String[][] fields={
-			{"accountNo", DataType.STRING}, 
+			{"accountNo", DataType.STRING},
+			{ "balance", DataType.DOUBLE}, 
 			{"firstName", DataType.STRING},
 			{"lastName", DataType.STRING}, 
 			{"addr1",  DataType.STRING},
@@ -45,8 +46,7 @@ public class NewAccountForm extends MyFormBuilder {
 			{ "birthday", DataType.STRING},
 			{"createDateTime", DataType.STRING},
 			{"lastDate", DataType.STRING},
-			{ "lastTime", DataType.STRING},
-			{ "balance", DataType.DOUBLE}
+			{ "lastTime", DataType.STRING}
 				};
     
 	static HashMap<String, String> usernameBook=new HashMap<String, String>();
@@ -61,14 +61,16 @@ public class NewAccountForm extends MyFormBuilder {
 		super();
 		currentFormType=Form_Type.NEW_ACCOUNT;
 		nextFormType=Form_Type.NEW_ACCOUNT;;//Form_Type.NEW_ACCOUNT_READ_ONLY;
-		aCustomer=new AccountProfile(tellerID, 0);
+		currentRecord=new AccountProfile(tellerID, 0);
+		currentRecord.setTransactionActionType(TransactionRecord.ActionType.NEW);		
 		formName="NEW ACCOUNT";
 	}
 	@Override
 	GridPane getGrid(Stage primaryStage){
 		if (currentRecord==null)
 			currentRecord=new AccountProfile();
-		((AccountProfile)currentRecord).setCurrentForm(this);
+		AccountProfile  wkRecord=(AccountProfile)currentRecord;		
+		wkRecord.setCurrentForm(this);
 		final HashMap<String, String> dataMap=currentRecord.getRecordDataMap();
 		
 		String formName="NEW";
@@ -80,9 +82,16 @@ public class NewAccountForm extends MyFormBuilder {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-        Text scenetitle = new Text("Welcome "+formTitleMsg);
+        Text scenetitle = new Text(formTitleMsg);
         scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         grid.add(scenetitle, 0, 0, 2, 1);
+        int iRow=2;		
+        if (wkRecord.lastName != null && wkRecord.lastName.length() > 1){
+        	Text nametitle = new Text(wkRecord.getAccountName());
+        	nametitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 18));
+            grid.add(nametitle, 0, iRow, 2, 1);
+            iRow++;
+        }
         /*
         Text dataHint = new Text("(for test only; pls enter teller1)");
         dataHint.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
@@ -90,8 +99,7 @@ public class NewAccountForm extends MyFormBuilder {
         */
 
         //int iCol=0;
-        int iRow=2;
-		for (int i=0; i<fields.length; i++){
+        for (int i=0; i<fields.length; i++){
 			final String ss=fields[i][0];
 			if (action==Form_Action.NEW){
 				if (ss.equalsIgnoreCase("accountNo"))continue;
@@ -105,6 +113,30 @@ public class NewAccountForm extends MyFormBuilder {
 	        
 			Label nameLabel = new Label(ss+":");
 			nameLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
+			if (ss.equalsIgnoreCase("balance")){				
+				Label nameLabeNm = new Label(dF.format(wkRecord.balance));
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.BOLD, 16));				
+				hBox.getChildren().addAll(nameLabel, nameLabeNm);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
+			if (ss.equalsIgnoreCase("lastBalance")){				
+				Label nameLabeNm = new Label(dF.format(wkRecord.lastBalance));
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				hBox.getChildren().addAll(nameLabel, nameLabeNm);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
+			if (ss.equalsIgnoreCase("createDateTime")){				
+				Label nameLabeNm = new Label(wkRecord.createDateTime);
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				hBox.getChildren().addAll(nameLabel, nameLabeNm);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
 			//grid.add(nameLabel, 0, iRow);
 			//dataMap.put(ss, "");
 			TextField nameField = new TextField();       
@@ -276,12 +308,12 @@ public class NewAccountForm extends MyFormBuilder {
 		
 	}
 	void setCustomerData(AccountProfile aCust){
-		aCustomer=aCust;
+		currentRecord=aCust;
 	}
 	AccountProfile getCurrentProfile(){
-		return aCustomer;
+		return (AccountProfile) currentRecord;
 	}
-	void setAction(Form_Action act){
+	void setFormAction(Form_Action act){
 		action=act;
 	}
 	static DecimalFormat dI=new DecimalFormat("00");
@@ -289,51 +321,60 @@ public class NewAccountForm extends MyFormBuilder {
 	@Override
 	public TransactionRecord saveDataToRecord(){
 		HashMap<String, String> dataMap=currentRecord.getRecordDataMap();
-		AccountProfile aProfile=new AccountProfile();
+		AccountProfile aProfile=(AccountProfile) currentRecord;//new AccountProfile();
+		if (action==Form_Action.NEW){
+			aProfile.setAccountNo(currentRecord.getAccount()) ;
+			aProfile.setTransactionActionType(TransactionRecord.ActionType.NEW);
+		} 
+		else if (action==Form_Action.UPDATE){
+			aProfile.setTransactionActionType(TransactionRecord.ActionType.UPDATE);
+		} 
+		else
+			aProfile.setTransactionActionType(TransactionRecord.ActionType.LOOKUP);
 		//for (Node node : parent.getChildrenUnmodifiable()){
 			//Parent parent1=(Parent)node;
 			//for (
 		for (int i=0; i<fields.length; i++){
 			String which1=fields[i][0];
-			Node node = parent.lookup("#"+which1);				
-			if (node == null ) continue;
-			currentRecord.getRecordDataMap().put(which1, ((TextField)node).getText());
+			//Node node = parent.lookup("#"+which1);				
+			//if (node == null ) continue;
+			//currentRecord.getRecordDataMap().put(which1, ((TextField)node).getText());
 			switch (which1){
 			case "accountNo":
-				//if (action==Form_Action.NEW)
-				aProfile.setAccountNo(aCustomer.getAccount()) ;
+				if (action!=Form_Action.NEW)
+				aProfile.setAccountNo(dataMap.get(which1)) ;
 				//else
 				//aProfile.setAccountNo(((TextField)node).getText()) ;
 				break;
 			case "firstName":
-				aProfile.setFirstName(((TextField)node).getText()) ;
+				aProfile.setFirstName(dataMap.get(which1));//((TextField)node).getText()) ;
 				break;
 			case "lastName":
-				aProfile.setLastName(((TextField)node).getText()) ;
+				aProfile.setLastName(dataMap.get(which1));//((TextField)node).getText()) ;
 				break;
 			case "addr1":
-				aProfile.setAddr1(((TextField)node).getText()) ;
+				aProfile.setAddr1(dataMap.get(which1));//((TextField)node).getText()) ;
 				break;
 			case "addr2":
-				aProfile.setAddr2(((TextField)node).getText()) ;
+				aProfile.setAddr2(dataMap.get(which1));//((TextField)node).getText()) ;
 				break;
 			case "city":
-				aProfile.setCity(((TextField)node).getText()) ;
+				aProfile.setCity(dataMap.get(which1));//((TextField)node).getText()) ;
 				break;
 			case "state":
-				aProfile.setState(((TextField)node).getText()) ;
+				aProfile.setState(dataMap.get(which1));//((TextField)node).getText()) ;
 				break;
 			case "zip":
-				aProfile.setZip(((TextField)node).getText()) ;
+				aProfile.setZip(dataMap.get(which1));//((TextField)node).getText()) ;
 				break;
 			case "phone":
-				aProfile.setPhone(((TextField)node).getText()) ;
+				aProfile.setPhone(dataMap.get(which1));//((TextField)node).getText()) ;
 				break;
 			case "ssc4":
-				aProfile.setSSC(((TextField)node).getText()) ;
+				aProfile.setSSC(dataMap.get(which1));//((TextField)node).getText()) ;
 				break;
 			case "birthday":
-				aProfile.setBirthday(((TextField)node).getText()) ;
+				aProfile.setBirthday(dataMap.get(which1));//((TextField)node).getText()) ;
 				break;
 			case "createDateTime":
 				if (action==Form_Action.NEW){
@@ -344,18 +385,18 @@ public class NewAccountForm extends MyFormBuilder {
 				}
 				break;
 			case "balance":
-				aProfile.setBalance(Double.parseDouble(((TextField)node).getText())) ;
+				if (dataMap.get(which1)!=null)
+				aProfile.setBalance(Double.parseDouble(dataMap.get(which1)));//Double.parseDouble(((TextField)node).getText())) ;
 				break;
 			default:
 				break;
 			}			
 		}
-		aCustomer=aProfile;
+		currentRecord=aProfile;
 		return aProfile;
 	}
 	void setWindowTitle(String ss){windowTitle=ss;}
 	private
-	AccountProfile aCustomer;
 	String windowTitle;
 	Form_Action action;
 }

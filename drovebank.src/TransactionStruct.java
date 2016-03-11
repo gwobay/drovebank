@@ -182,5 +182,30 @@ public class TransactionStruct extends TransactionRecord {
 			// TODO Auto-generated method stub
 			reason=string;
 		}
-
+		@Override 
+		public String printType(){
+			String actS="NEW";
+			switch (transactionActionType){
+			case UPDATE:
+				actS="UPDATE";
+				break;
+			case LOOKUP:
+				actS="LOOKUP";
+				break;
+			default:
+				break;
+			}
+			switch (action){
+			case DEPOSIT:
+				actS += " DEPOSIT";
+				break;
+			case WITHDRAW:
+				actS += " WITHDRAW";
+				break;
+			default:
+				break;
+			}
+			return actS;
+			//myLogger.info(actS);
+		}
 }

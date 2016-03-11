@@ -22,6 +22,18 @@ public class BankCommander extends Thread {
 			e.printStackTrace();
 		}
 	}
+	public void tellerMachineQuit(TransactionProcessor.TransactionCompleteListener aUser)
+	{
+		HashMap<String, TransactionProcessor.TransactionCompleteListener > registedHere=null;
+		for (int i=0; i<allProcessors.size(); i++){
+			try {
+			registedHere=allProcessors.get(i).getListenerList();
+			} catch (NullPointerException e){continue;}
+			if (registedHere.remove(aUser.getListenerName())==null)
+				continue;
+			break;
+		}
+	}
 	ArrayBlockingQueue<AccountProfile> filerAccountProfileQ;
 	ArrayBlockingQueue<TransactionStruct> transactionStruct;		
 	HashMap<String, AccountProfile> accountBook;
@@ -39,16 +51,17 @@ public class BankCommander extends Thread {
 		if (accountBook.size()<1){
 		aFiler.buildMemoryFromDisk(); //fill account book
 		Iterator<String> itr=accountBook.keySet().iterator();
-		int minAcc=1000000;
+		int maxAcc=0;
 		while (itr.hasNext()){
 			String key=itr.next();
 			AccountProfile aCust=accountBook.get(key);
 			if (aCust==null) continue;
 			String[] terms=aCust.getAccount().split("-");
-			int iLast=Integer.parseInt(terms[terms.length-1]);
-			if (iLast < minAcc) minAcc=iLast;
+			String custId=terms[terms.length-1];
+			int iLast=Integer.parseInt(custId.substring(custId.length()-4));
+			if (iLast > maxAcc) maxAcc=iLast;
 		}
-		AccountProfile.setAccountIdInit(minAcc+1);
+		AccountProfile.setAccountIdInit(maxAcc);
 		}
 	}
 	

@@ -153,16 +153,19 @@ public class TransactionProcessor extends Thread{
 		pfRecord.lastTime=tRecord.time;
 		aRecord.setStatus(TransactionRecord.TransactionState.SUCCESS);
 		todayMoneyTransaction.add(aRecord);
+		aRecord.setTransactionActionType(TransactionRecord.ActionType.UPDATE);		
 		finishOneRecord(aRecord);
 		accountBook.put(pfRecord.getAccount(), pfRecord);
 		pfRecord.setStatus(TransactionRecord.TransactionState.SUCCESS);
 		pfRecord.setMachineId(aRecord.getRecordHandler());
 		pfRecord.setTransactionType(TransactionRecord.Type.PROFILE);
+		pfRecord.setTransactionActionType(TransactionRecord.ActionType.UPDATE);
 		finishOneRecord(pfRecord);
 		return;			
 		
 	}
 	void ProcessTransaction(TransactionRecord aTransaction){
+		AppCommander.myLogger.info(aTransaction.printType());
 		if (TransactionRecord.Type.PROFILE==aTransaction.getTransactionType()){
 			ProcessProfileTransaction(aTransaction);
 		}

@@ -1,10 +1,12 @@
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.logging.Logger;
 
 public abstract class TransactionRecord {
 	public static enum Type {PROFILE, TRANSACTION};
 	public static enum ActionType {NEW, UPDATE, LOOKUP};
 	public static enum TransactionState {OPEN, PENDING, SUCCESS, FAILED};
+	static final Logger myLogger=Logger.getAnonymousLogger();
 	protected Type transactionType;
 	protected ActionType transactionActionType;
 	protected TellerMachine recordHandler;
@@ -59,8 +61,9 @@ public abstract class TransactionRecord {
 	public void setTransactionActionType(ActionType act1){
 		transactionActionType=act1;
 	}
+	//for debug
 	public ActionType getTransactionActionType(){
 		return transactionActionType;
 	}
-	
+	public abstract String printType();
 }
