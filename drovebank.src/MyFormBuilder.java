@@ -121,8 +121,15 @@ public abstract class MyFormBuilder {
 		Form_Type getFormType(){
 			return currentFormType;
 		}
+		void setFormType(Form_Type nType){
+			currentFormType=nType;
+		}
 		Form_Type getNextFormType(){
 			return nextFormType;
+		}
+		
+		void setNextFormType(Form_Type nType){
+			nextFormType=nType;
 		}
 		void setCurrentUser(Teller aTeller){
 			loginUser=aTeller;

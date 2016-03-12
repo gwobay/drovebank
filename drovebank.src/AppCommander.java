@@ -378,8 +378,6 @@ public class AppCommander extends Application {
 		TellerMachine myMachine; //this should be initiated from xml file!!
 		//------------
 		boolean stopFlag;
-		FormMaker formMaker;
-		FormProcessor formProcessor; //dataProcessor;
 		Stage myStage;
 		MyFormBuilder currentForm;
 		MyFormBuilder pendingForm;
@@ -486,7 +484,7 @@ public class AppCommander extends Application {
 		    primaryStage.show();
 		}
 		public final void swapWindow(Stage primaryStage){
-			
+			pendingForm=null;
 			boolean needAccountNo=false;
 					switch (currentForm.getNextFormType())
 					{
@@ -602,6 +600,11 @@ public class AppCommander extends Application {
 	        hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 	        hbBtn.getChildren().add(btn);
 	        grid.add(hbBtn, 1, 6);
+	        Button closeBtn = new Button("CANCEL");
+	        HBox hbCancel = new HBox(10);
+	        hbCancel.setAlignment(Pos.BOTTOM_RIGHT);
+	        hbCancel.getChildren().add(closeBtn);
+	        grid.add(hbCancel, 0, 6);
 	        
 	        //............. button event handler
 	        btn.setOnAction(new EventHandler<ActionEvent>() {
@@ -612,9 +615,29 @@ public class AppCommander extends Application {
 	            	//primaryStage.setScene(openDetailedForm(primaryStage));
 	            	//primaryStage.show();
 	            	AccountProfile bRecord=new AccountProfile();
-	            	bRecord.setAccountNo(accountNo.getText());
+	            	String data=accountNo.getText();
+	            	if (data != null && data.length() > 2){
+	            	bRecord.setAccountNo(data);
 	            	bRecord.setTransactionActionType(TransactionRecord.ActionType.LOOKUP);
 	            	sendTransactionAndWaitForResponse(primaryStage, bRecord);
+	            	}
+	            }
+	        });
+	        closeBtn.setOnAction(new EventHandler<ActionEvent>() {	       	 
+	            @Override
+	            public void handle(ActionEvent e) {
+	            	//showCurrentForm(primaryStage);
+	            	//if (lastScene==null){
+	            		myMachine.getCurrentForm().processStatus=true;           	
+	            		myMachine.getCurrentForm().setNextFormType(MyFormBuilder.Form_Type.TRANSACTION_MAIN);
+	            		swapWindow(primaryStage);
+	            	//}
+	            		/*
+	            	else {
+	            	primaryStage.setScene(lastScene);
+	            	primaryStage.show();
+	            	}
+	            	*/
 	            }
 	        });
 	        Scene scene = new Scene(grid, 500, 275);
@@ -655,6 +678,12 @@ public class AppCommander extends Application {
 	        hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 	        hbBtn.getChildren().add(btn);
 	        grid.add(hbBtn, 1, 6);
+	        Button closeBtn = new Button("CANCEL");
+	        HBox hbCancel = new HBox(10);
+	        hbCancel.setAlignment(Pos.BOTTOM_RIGHT);
+	        hbCancel.getChildren().add(closeBtn);
+	        grid.add(hbCancel, 0, 6);
+	        
 	        
 	        //............. button event handler
 	        btn.setOnAction(new EventHandler<ActionEvent>() {
@@ -666,6 +695,8 @@ public class AppCommander extends Application {
 	            	//primaryStage.show();
 	            	String sendingSide=sendingAccountNo.getText();
 	            	String receivingSide=receivingAccountNo.getText();
+	            	if (sendingSide != null && sendingSide.length() > 2 &&
+	            			receivingSide != null && receivingSide.length() > 2){
 	            	forThis.getSendingRecord().setAccountNo(sendingSide);
 	            	forThis.getReceivingRecord().setAccountNo(receivingSide);
 	            	AccountProfile[] aRecord=new AccountProfile[2];
@@ -675,7 +706,25 @@ public class AppCommander extends Application {
 	            	aRecord[0].setTransactionActionType(TransactionRecord.ActionType.LOOKUP);
 	            	aRecord[1].setAccountNo(receivingSide);
 	            	aRecord[1].setTransactionActionType(TransactionRecord.ActionType.LOOKUP);
-	            	sendTransactionsAndWaitForResponse(primaryStage, aRecord);	            	
+	            	sendTransactionsAndWaitForResponse(primaryStage, aRecord);	
+	            	}
+	            }
+	        });
+	        closeBtn.setOnAction(new EventHandler<ActionEvent>() {	       	 
+	            @Override
+	            public void handle(ActionEvent e) {
+	            	//showCurrentForm(primaryStage);
+	            	//if (lastScene==null){
+	            		myMachine.getCurrentForm().processStatus=true;           	
+	            		myMachine.getCurrentForm().setNextFormType(MyFormBuilder.Form_Type.TRANSACTION_MAIN);
+	            		swapWindow(primaryStage);
+	            	//}
+	            		/*
+	            	else {
+	            	primaryStage.setScene(lastScene);
+	            	primaryStage.show();
+	            	}
+	            	*/
 	            }
 	        });
 	        Scene scene = new Scene(grid, 500, 275);
@@ -788,8 +837,12 @@ public class AppCommander extends Application {
 	            @Override
 	            public void handle(ActionEvent e) {
 	            	//showCurrentForm(primaryStage);
+	            	if (lastScene==null)
+	            		swapWindow(primaryStage);
+	            	else {
 	            	primaryStage.setScene(lastScene);
 	            	primaryStage.show();
+	            	}
 	            }
 	        });
 	        Scene scene = new Scene(grid, stdWidth, stdHeight);

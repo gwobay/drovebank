@@ -46,8 +46,6 @@ public class TellerMachine extends Thread
 	TellerMachine(){
 		tellerMachineID++;
 		machineID=tellerMachineID;
-		formMaker=new FormMaker();
-		formProcessor=new FormProcessor();
 		lastScene=null;
 		currentScene=null;
 		outBox=new Vector<TransactionRecord>();
@@ -160,8 +158,6 @@ public class TellerMachine extends Thread
 		boolean stopFlag;
 		BankCommander commander;
 		Vector<TransactionRecord> outBox;
-		FormMaker formMaker;
-		FormProcessor formProcessor; //dataProcessor;
 		MyFormBuilder currentForm;
 		MyFormBuilder lastForm;
 		TransactionRecord currentRecord;
