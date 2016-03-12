@@ -31,17 +31,30 @@ public class DepositForm extends MoneyTransactionForm {
 		return myName;
 	}
 	static final String[][] fields={
-			{"accountNo", DataType.STRING},
-			{"accountName" , DataType.STRING},
-			{"action", DataType.STRING},
-			{"amount", DataType.DOUBLE}, 
-			{"date",  DataType.STRING},
-			{"time",  DataType.STRING},
-			{"balance", DataType.DOUBLE},
-			{"lastBalance",  DataType.DOUBLE},
-			{"processedBy",  DataType.INTEGER},
-			{"reason", DataType.STRING},
-			{"confirmedBy", DataType.INTEGER},
+			{"accountNo", FormFieldBox.STRING},
+			{"accountName" , FormFieldBox.STRING},
+			{"action", FormFieldBox.STRING},
+			{"amount", FormFieldBox.DOUBLE}, 
+			{"date",  FormFieldBox.STRING},
+			{"time",  FormFieldBox.STRING},
+			{"balance", FormFieldBox.DOUBLE},
+			{"lastBalance",  FormFieldBox.DOUBLE},
+			{"processedBy",  FormFieldBox.INTEGER},
+			{"reason", FormFieldBox.STRING},
+			{"confirmedBy", FormFieldBox.INTEGER},
+			};
+	static final FormFieldBox.Type[] fieldType={			
+				FormFieldBox.Type.ACCOUNTdata,//{"accountNo",
+				FormFieldBox.Type.STRINGdata,//{"accountName" , 
+				FormFieldBox.Type.STRINGdata,//"action", 
+				FormFieldBox.Type.MONEYdata,//{"amount", 
+				FormFieldBox.Type.DATEdata,//"date",  
+				FormFieldBox.Type.STRINGdata,//"time",  
+				FormFieldBox.Type.MONEYdata,//"balance", 
+				FormFieldBox.Type.MONEYdata,//"lastBalance",  
+				FormFieldBox.Type.INTEGERdata,//"processedBy",  
+				FormFieldBox.Type.STRINGdata,//"reason", 
+				FormFieldBox.Type.INTEGERdata,//"confirmedBy", 
 			};
 	private DepositForm(){
 		super();
@@ -76,16 +89,214 @@ public class DepositForm extends MoneyTransactionForm {
 		((TransactionStruct)currentRecord).setCurrentForm(this);
 		final HashMap<String, String> dataMap=currentRecord.getRecordDataMap();
 		/*
-		 * 			{"accountNo", DataType.STRING}, 
-			{"action", DataType.STRING},
-			{"amount", DataType.DOUBLE}, 
-			{"date",  DataType.STRING},
-			{"time",  DataType.STRING},
-			{"balance", DataType.DOUBLE},
-			{"lastBalance",  DataType.DOUBLE},
-			{"processedBy",  DataType.INTEGER},
-			{"reason", DataType.STRING},
-			{"confirmedBy", DataType.INTEGER},
+		 * 			{"accountNo", FormFieldBox.STRING}, 
+			{"action", FormFieldBox.STRING},
+			{"amount", FormFieldBox.DOUBLE}, 
+			{"date",  FormFieldBox.STRING},
+			{"time",  FormFieldBox.STRING},
+			{"balance", FormFieldBox.DOUBLE},
+			{"lastBalance",  FormFieldBox.DOUBLE},
+			{"processedBy",  FormFieldBox.INTEGER},
+			{"reason", FormFieldBox.STRING},
+			{"confirmedBy", FormFieldBox.INTEGER},
+		 */
+			DecimalFormat dI=new DecimalFormat("00");
+			DecimalFormat dF=new DecimalFormat("0.00");
+		String formName=formTitleMsg;
+		boolean notNew=false;
+        if (action != null && action!=Form_Action.NEW) {
+        	notNew=true;
+        }
+        else {
+    		Calendar cal=GregorianCalendar.getInstance();
+    		String date=dI.format(cal.get(Calendar.MONTH))+"/"+dI.format(cal.get(Calendar.DATE))+"/"+dI.format(cal.get(Calendar.YEAR));
+    		String time=dI.format(cal.get(Calendar.HOUR))+":"+dI.format(cal.get(Calendar.MINUTE))+":"+dI.format(cal.get(Calendar.SECOND));
+        	dataMap.put("accountNo", currentRecord.getAccount());
+        	dataMap.put("action", "DEPOSIT");
+        	dataMap.put("amount", "0"); 
+			dataMap.put("date",  date);
+			dataMap.put("time",  time);
+			dataMap.put("balance", dF.format(customer.balance));
+			dataMap.put("lastBalance",  dF.format(customer.lastBalance));
+			dataMap.put("processedBy",  dI.format(app.getCurrentUser().userID));
+			dataMap.put("reason", "");
+			dataMap.put("confirmedBy", "");
+			currentRecord.setTransactionActionType(TransactionRecord.ActionType.NEW);
+			currentRecord.setTransactionType(TransactionRecord.Type.TRANSACTION);
+        }
+		 //---build content
+        GridPane grid = new GridPane();
+        //----- content detail ---------------
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(25, 25, 25, 25));
+        Text scenetitle = new Text("Welcome "+formTitleMsg);
+        scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        grid.add(scenetitle, 0, 0, 2, 1);
+        /*
+        Text dataHint = new Text("(for test only; pls enter teller1)");
+        dataHint.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
+        grid.add(dataHint, 0, 2, 2, 3);
+        */
+
+        //int iCol=0;
+        int iRow=2;
+		for (int i=0; i<fields.length; i++){
+			String ss=fields[i][0];
+			
+			HBox hBox = new HBox(0);
+			hBox.setAlignment(Pos.CENTER_LEFT);//CENTER);
+	        
+			Label nameLabel = new Label(ss+":");
+			nameLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
+			//grid.add(nameLabel, 0, iRow);
+			if (ss.equalsIgnoreCase("accountNo")){
+				
+				Label valueLabe = new Label(accountNo);
+				valueLabe.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				hBox.getChildren().addAll(nameLabel, valueLabe);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
+			if (ss.equalsIgnoreCase("accountName")){
+				
+				Label nameLabeNm = new Label(accountName);
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				hBox.getChildren().addAll(nameLabel, nameLabeNm);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
+			if (ss.equalsIgnoreCase("action")){
+				
+				Label nameLabeNm = new Label(" DEPOSIT");
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				hBox.getChildren().addAll(nameLabel, nameLabeNm);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
+			if (ss.equalsIgnoreCase("balance")){
+				
+				Label nameLabeNm = new Label(dF.format(customer.balance));
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				hBox.getChildren().addAll(nameLabel, nameLabeNm);
+				grid.add(hBox, 0, iRow);
+				iRow += 2;
+				continue;
+			}
+			TextField nameField = new TextField();       
+			//grid.add(nameField, 1, iRow, 2, iRow); 
+			
+			nameField.focusedProperty().addListener(new ChangeListener<Boolean>(){ 
+				@Override
+				public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) {
+					// TODO Auto-generated method stub
+					String upper=nameField.getText();
+					dataMap.put(ss,  upper);
+					if (upper != null && upper.length() > 0) {
+					dataMap.put(ss,  upper.toUpperCase());
+					nameField.setText(upper.toUpperCase());
+					}
+				}
+			});
+			String data=dataMap.get(ss);
+			if (data != null) nameField.setText(data);
+			nameField.setId(ss);
+			
+			if (ss.equalsIgnoreCase("accountNo"))
+			{
+				String acctno=currentRecord.getAccount();
+				if (acctno != null){
+				nameField.setText(acctno);
+				nameField.setFont(Font.font("Tahoma", FontWeight.BOLD, 14));
+				nameField.setEditable(false);
+				}
+			}
+			hBox.getChildren().addAll(nameLabel, nameField);
+			grid.add(hBox, 0, iRow);
+			iRow += 2;//++;			
+		}
+		String actName="Do-It!";
+        if (action==Form_Action.UPDATE)  actName="Update";
+        else if (action==Form_Action.SHOW) actName="Confirm";
+        //--- add switch 
+        Button actBtn = new Button(actName);
+        HBox hbBtn = new HBox(0);
+        hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
+        hbBtn.getChildren().add(actBtn);
+        if (action!=Form_Action.SHOW)
+        grid.add(hbBtn, 2, iRow+4);
+        Button closeBtn = new Button("Close");
+        HBox hCbBtn = new HBox(0);
+        hCbBtn.setAlignment(Pos.BOTTOM_LEFT);
+        hCbBtn.getChildren().add(closeBtn);
+        grid.add(hCbBtn, 0, iRow+4);
+        
+        //---- optional to display output  -----------
+        closeBtn.setOnAction(new EventHandler<ActionEvent>() {	        	 
+            @Override
+            public void handle(ActionEvent e) {
+            	processStatus=true;           	
+            	nextFormType=Form_Type.MAIN;
+            	app.swapWindow(primaryStage);
+            }
+        });
+        if (action!=Form_Action.SHOW)
+        	/*
+        actBtn.setOnAction(new EventHandler<ActionEvent>() {	        	 
+            @Override
+            public void handle(ActionEvent e) {
+            	processStatus=true;           	
+            	nextFormType=Form_Type.TRANSACTION_MAIN;
+            	app.swapWindow(primaryStage);
+            }
+        });
+        else*/
+        actBtn.setOnAction(new EventHandler<ActionEvent>() {	        	 
+            @Override
+            public void handle(ActionEvent e) {
+            	TransactionRecord bRecord=app.currentForm.saveDataToRecord();
+            	app.sendTransactionAndWaitForResponse(primaryStage, bRecord);
+            }
+        });
+        
+        //----------
+        openStatus=true;
+        processStatus=false;
+        parent=grid;
+        return grid;
+	}
+	
+	GridPane getGridOK(Stage primaryStage){
+		//if (currentRecord==null)
+			//currentRecord=new TransactionStruct();
+		//the account no should be available before reach here
+		double lastBalance=0;
+		/*
+		if (currentRecord.getTransactionType()==TransactionRecord.Type.PROFILE){
+			customer=(AccountProfile) currentRecord;
+			currentRecord=new TransactionStruct(filledBy);
+			currentRecord.setAccountNo(customer.getAccount());
+			lastBalance=customer.balance;
+		}*/
+		setAccountNo();
+		setAccountName();
+		((TransactionStruct)currentRecord).setCurrentForm(this);
+		final HashMap<String, String> dataMap=currentRecord.getRecordDataMap();
+		/*
+		 * 			{"accountNo", FormFieldBox.STRING}, 
+			{"action", FormFieldBox.STRING},
+			{"amount", FormFieldBox.DOUBLE}, 
+			{"date",  FormFieldBox.STRING},
+			{"time",  FormFieldBox.STRING},
+			{"balance", FormFieldBox.DOUBLE},
+			{"lastBalance",  FormFieldBox.DOUBLE},
+			{"processedBy",  FormFieldBox.INTEGER},
+			{"reason", FormFieldBox.STRING},
+			{"confirmedBy", FormFieldBox.INTEGER},
 		 */
 			DecimalFormat dI=new DecimalFormat("00");
 			DecimalFormat dF=new DecimalFormat("0.00");
@@ -255,6 +466,7 @@ public class DepositForm extends MoneyTransactionForm {
         parent=grid;
         return grid;
 	}
+	
 	@Override
 	Parent createForm(){
 		/*

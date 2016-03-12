@@ -36,23 +36,23 @@ public class TransferForm extends MoneyTransactionForm {
 	final DecimalFormat dF=new DecimalFormat("0.00");
 
 	static final String[][] fields={
-			{"sendingAccountNo", DataType.STRING}, 
+			{"sendingAccountNo", FormFieldBox.STRING}, 
 			
-			{"amount", DataType.DOUBLE},
+			{"amount", FormFieldBox.DOUBLE},
 			
-			{"availableBalance", DataType.DOUBLE},
-			{"sendSideOldBalance", DataType.DOUBLE},
+			{"availableBalance", FormFieldBox.DOUBLE},
+			{"sendSideOldBalance", FormFieldBox.DOUBLE},
 			
-			{"recevingAccountNo", DataType.STRING}, 
+			{"recevingAccountNo", FormFieldBox.STRING}, 
 			
-			{"currentBalance", DataType.DOUBLE},
-			{"beforeReceivedBalance", DataType.DOUBLE},
+			{"currentBalance", FormFieldBox.DOUBLE},
+			{"beforeReceivedBalance", FormFieldBox.DOUBLE},
 			
-			{"processedBy",  DataType.INTEGER},
-			{"date",  DataType.STRING},
-			{"time",  DataType.STRING},
+			{"processedBy",  FormFieldBox.INTEGER},
+			{"date",  FormFieldBox.STRING},
+			{"time",  FormFieldBox.STRING},
 
-			{"confirmedBy", DataType.INTEGER},
+			{"confirmedBy", FormFieldBox.INTEGER},
 		};
 	TransferForm(){
 		super();
@@ -129,7 +129,7 @@ public class TransferForm extends MoneyTransactionForm {
 	        
 			Label sendAcctNoLabel = new Label("Sending Side AccountNo : "+sRecord.getAccount());
 			sendingRecord.setAccountNo(sRecord.getAccount());
-			sendAcctNoLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 18));
+			sendAcctNoLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 18));
 			hBox.getChildren().add(sendAcctNoLabel);
 			iRow++;
 			Label sendSideBalanceLabel = new Label("Available Balance : "+dF.format(sRecord.balance));
@@ -151,19 +151,21 @@ public class TransferForm extends MoneyTransactionForm {
 			grid.add(hBox, 0, iSectionRow);
 			iSectionRow += iRow;
 			//grid.add(nameLabel, 0, iRow);
+			String transferCaption="Amount to Transfer:";
+			if (notNew) transferCaption="Amount Transfered:"+dF.format(((TransactionStruct)sendingRecord).getAmount());
 			HBox hAmtBox = new HBox(0);
-			Label valueLabe = new Label("Amount to Transfer:");
-				valueLabe.setFont(Font.font("Tahoma", FontWeight.BOLD, 18));	
-			TextField amountField = new TextField();       
-				//grid.add(nameField, 1, iRow, 2, iRow); 
-				
-			hAmtBox.getChildren().addAll(valueLabe, amountField);
+			Label valueLabe = new Label(transferCaption);
+			valueLabe.setFont(Font.font("Tahoma", FontWeight.BOLD, 18));	
+			TextField amountField = new TextField(); 
+			if (notNew) {					
+				hAmtBox.getChildren().addAll(valueLabe);				
+			}
+			else hAmtBox.getChildren().addAll(valueLabe, amountField);
 			grid.add(hAmtBox, 0, iSectionRow);
-			
 			iSectionRow += 2;
 			
 			Text dividerRecv = new Text("----Receive Side Info :"+((AccountProfile)rRecord).getAccountName());
-			dividerRecv.setFont(Font.font("Tahoma", FontWeight.BOLD, 18));
+			dividerRecv.setFont(Font.font("Tahoma", FontWeight.NORMAL, 18));
 	        grid.add(dividerRecv, 0, iSectionRow, 2, 1);
 	        
 			VBox hRBox = new VBox(0);
@@ -171,7 +173,7 @@ public class TransferForm extends MoneyTransactionForm {
 	        
 			Label recvAcctNoLabel = new Label("Receiving Side AccountNo : "+rRecord.getAccount());
 			receivingRecord.setAccountNo(rRecord.getAccount());
-			recvAcctNoLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 18));
+			recvAcctNoLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 18));
 			hRBox.getChildren().add(recvAcctNoLabel);
 			iRow++;
 			Label recvSideBalanceLabel = new Label("Cummulated Balance : "+dF.format(rRecord.balance));
@@ -247,12 +249,15 @@ public class TransferForm extends MoneyTransactionForm {
             	((TransactionStruct)sendingRecord).setAmount(Double.parseDouble(amountField.getText()));
             	((TransactionStruct)sendingRecord).date=date;
             	((TransactionStruct)sendingRecord).time=time;
+            	((TransactionStruct)sendingRecord).setReason(receivingRecord.getAccount());
             	receivingRecord.setTransactionActionType(TransactionRecord.ActionType.NEW);
             	receivingRecord.setTransactionType(TransactionRecord.Type.TRANSACTION);
             	((TransactionStruct)receivingRecord).setAction(TransactionStruct.Action.DEPOSIT);
             	((TransactionStruct)receivingRecord).setAmount(Double.parseDouble(amountField.getText()));          
             	((TransactionStruct)receivingRecord).date=date;
             	((TransactionStruct)receivingRecord).time=time;
+            	((TransactionStruct)receivingRecord).setReason(sendingRecord.getAccount());
+            	
             	app.sendTransactionsAndWaitForResponse(primaryStage, aRecord);	
             }
         });

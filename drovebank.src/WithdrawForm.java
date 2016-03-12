@@ -31,17 +31,30 @@ public class WithdrawForm extends MoneyTransactionForm {
 	}
 	
 	static final String[][] fields={
-			{"accountNo", DataType.STRING},
-			{"accountName" , DataType.STRING},
-			{"action", DataType.STRING},
-			{"amount", DataType.DOUBLE}, 
-			{"date",  DataType.STRING},
-			{"time",  DataType.STRING},
-			{"balance", DataType.DOUBLE},
-			{"lastBalance",  DataType.DOUBLE},
-			{"processedBy",  DataType.INTEGER},
-			{"reason", DataType.STRING},
-			{"confirmedBy", DataType.INTEGER},
+			{"accountNo", FormFieldBox.STRING},
+			{"accountName" , FormFieldBox.STRING},
+			{"action", FormFieldBox.STRING},
+			{"amount", FormFieldBox.DOUBLE}, 
+			{"date",  FormFieldBox.STRING},
+			{"time",  FormFieldBox.STRING},
+			{"balance", FormFieldBox.DOUBLE},
+			{"lastBalance",  FormFieldBox.DOUBLE},
+			{"processedBy",  FormFieldBox.INTEGER},
+			{"reason", FormFieldBox.STRING},
+			{"confirmedBy", FormFieldBox.INTEGER},
+			};
+	static final FormFieldBox.Type[] fieldType={			
+				FormFieldBox.Type.ACCOUNTdata,//{"accountNo",
+				FormFieldBox.Type.STRINGdata,//{"accountName" , 
+				FormFieldBox.Type.STRINGdata,//"action", 
+				FormFieldBox.Type.MONEYdata,//{"amount", 
+				FormFieldBox.Type.DATEdata,//"date",  
+				FormFieldBox.Type.STRINGdata,//"time",  
+				FormFieldBox.Type.MONEYdata,//"balance", 
+				FormFieldBox.Type.MONEYdata,//"lastBalance",  
+				FormFieldBox.Type.INTEGERdata,//"processedBy",  
+				FormFieldBox.Type.STRINGdata,//"reason", 
+				FormFieldBox.Type.INTEGERdata,//"confirmedBy", 
 			};
 	private WithdrawForm(){
 		super();
