@@ -78,7 +78,9 @@ public class TransferForm extends MoneyTransactionForm {
     	final AccountProfile rRecord=(AccountProfile)receivingAccountRecord;
 
         boolean notNew= (action != null && action!=Form_Action.NEW);
-       	/*
+        
+        
+   /*
         	dataMap.put("sendingAccountNo", sRecord.getAccount());
         	dataMap.put("availableBalance", dF.format(sRecord.balance));
         	dataMap.put("sendSideOldBalance", dF.format(sRecord.lastBalance));
@@ -235,11 +237,11 @@ public class TransferForm extends MoneyTransactionForm {
             @Override
             public void handle(ActionEvent e) {
         		Calendar cal=GregorianCalendar.getInstance();
-        		String date=dI.format(cal.get(Calendar.MONTH))+"/"+dI.format(cal.get(Calendar.DATE))+"/"+dI.format(cal.get(Calendar.YEAR));
+        		String date=dI.format(cal.get(Calendar.MONTH)+1)+"/"+dI.format(cal.get(Calendar.DATE))+"/"+dI.format(cal.get(Calendar.YEAR));
         		String time=dI.format(cal.get(Calendar.HOUR))+":"+dI.format(cal.get(Calendar.MINUTE))+":"+dI.format(cal.get(Calendar.SECOND));
 
-            	TransactionRecord bRecord=app.currentForm.saveDataToRecord();
-            	app.sendTransactionAndWaitForResponse(primaryStage, bRecord);
+            	//TransactionRecord bRecord=app.currentForm.saveDataToRecord();
+            	//app.sendTransactionAndWaitForResponse(primaryStage, bRecord);
             	TransactionRecord[] aRecord=new TransactionStruct[2];
             	aRecord[0]=sendingRecord;
             	aRecord[1]=receivingRecord;

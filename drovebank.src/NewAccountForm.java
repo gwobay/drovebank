@@ -116,6 +116,7 @@ public class NewAccountForm extends MyFormBuilder {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
+        if (notNew) formTitleMsg="Showing Current Balance and Account Info";
         Text scenetitle = new Text(formTitleMsg);
         scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         grid.add(scenetitle, 0, 0, 2, 1);
@@ -592,7 +593,7 @@ public class NewAccountForm extends MyFormBuilder {
 			case "createDateTime":
 				if (action==Form_Action.NEW){
 		    		Calendar cal=GregorianCalendar.getInstance();
-	    		String date=dI.format(cal.get(Calendar.MONTH))+"/"+dI.format(cal.get(Calendar.DATE))+"/"+dI.format(cal.get(Calendar.YEAR));
+	    		String date=dI.format(cal.get(Calendar.MONTH)+1)+"/"+dI.format(cal.get(Calendar.DATE))+"/"+dI.format(cal.get(Calendar.YEAR));
 	    		String time=dI.format(cal.get(Calendar.HOUR))+":"+dI.format(cal.get(Calendar.MINUTE));
 				aProfile.setCreateDateTime(date+"@"+time);
 				}

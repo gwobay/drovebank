@@ -75,6 +75,7 @@ public class TransactionProcessor extends Thread{
 				AccountProfile bRecord=accountBook.get(aRecord.getAccount());
 				if (bRecord==null){
 					aRecord.setStatus(TransactionRecord.TransactionState.FAILED);
+					log.severe("CANNOT LOCATE THE account: "+aRecord.getAccount());
 					aRecord.setProcessReason("ACCOUNT NON-EXIST");
 					returnRecordToSender(aRecord);
 					return;
@@ -86,6 +87,7 @@ public class TransactionProcessor extends Thread{
 				finishOneRecord(bRecord);
 				return;
 			}
+			aRecord.recordToHashMap();				
 			accountBook.put(aRecord.getAccount(), aRecord);
 			aRecord.setStatus(TransactionRecord.TransactionState.SUCCESS);
 			finishOneRecord(aRecord);
@@ -155,6 +157,7 @@ public class TransactionProcessor extends Thread{
 		todayMoneyTransaction.add(aRecord);
 		aRecord.setTransactionActionType(TransactionRecord.ActionType.UPDATE);		
 		finishOneRecord(aRecord);
+		pfRecord.recordToHashMap();		
 		accountBook.put(pfRecord.getAccount(), pfRecord);
 		pfRecord.setStatus(TransactionRecord.TransactionState.SUCCESS);
 		pfRecord.setMachineId(aRecord.getRecordHandler());
@@ -165,7 +168,7 @@ public class TransactionProcessor extends Thread{
 		
 	}
 	void ProcessTransaction(TransactionRecord aTransaction){
-		AppCommander.myLogger.info(aTransaction.printType());
+		log.info(aTransaction.printType());
 		if (TransactionRecord.Type.PROFILE==aTransaction.getTransactionType()){
 			ProcessProfileTransaction(aTransaction);
 		}

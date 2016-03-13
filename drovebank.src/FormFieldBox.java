@@ -269,7 +269,7 @@ public class FormFieldBox {
 			return hBox;
 		}
 		public HBox getDateBox(){
-			String toSplit=(defaultValue==null)?"01-01-2016":defaultValue;
+			String toSplit=(defaultValue==null)?"01-01-2016":defaultValue.replace('/', '-');
 			String defaultMonth=dI2.format(1);
 			String defaultDay=dI2.format(1);
 			String defaultYear=dI4.format(2016);
@@ -280,20 +280,20 @@ public class FormFieldBox {
 
 			HBox hBox = new HBox(0);
 			hBox.setAlignment(Pos.CENTER_LEFT);//CENTER);       
-			Label nameLabel = new Label(label+"(mm/dd/yyyy):");
+			Label nameLabel = new Label(label+"(mm-dd-yyyy):");
 			FontWeight fw=(emphasis?FontWeight.BOLD:FontWeight.NORMAL);
 			nameLabel.setFont(Font.font("Tahoma", fw, fontSize));
 			final TextField monthField = new TextField(defaultMonth);
 			monthField.setPrefColumnCount(2);
 			monthField.setTextFormatter(numberFormatter0);
 			monthField.setText(defaultMonth);
-			Label slash1 = new Label("/");
+			Label slash1 = new Label("-");
 			//grid.add(nameField, 1, iRow, 2, iRow); 
 			final TextField dayField = new TextField(defaultDay); 
 			dayField.setPrefColumnCount(2);
 			dayField.setTextFormatter(numberFormatter1);
 			dayField.setText(defaultDay);
-			Label slash2 = new Label("/");
+			Label slash2 = new Label("-");
 			final TextField yearField = new TextField(defaultYear); 
 			yearField.setPrefColumnCount(4);
 			yearField.setTextFormatter(numberFormatter2);

@@ -102,14 +102,15 @@ public class DepositForm extends MoneyTransactionForm {
 		 */
 			DecimalFormat dI=new DecimalFormat("00");
 			DecimalFormat dF=new DecimalFormat("0.00");
-		String formName=formTitleMsg;
 		boolean notNew=false;
         if (action != null && action!=Form_Action.NEW) {
         	notNew=true;
+        	formTitleMsg="Show Current Balance";
         }
         else {
+        	formTitleMsg="New Deposit";
     		Calendar cal=GregorianCalendar.getInstance();
-    		String date=dI.format(cal.get(Calendar.MONTH))+"/"+dI.format(cal.get(Calendar.DATE))+"/"+dI.format(cal.get(Calendar.YEAR));
+    		String date=dI.format(cal.get(Calendar.MONTH)+1)+"/"+dI.format(cal.get(Calendar.DATE))+"/"+dI.format(cal.get(Calendar.YEAR));
     		String time=dI.format(cal.get(Calendar.HOUR))+":"+dI.format(cal.get(Calendar.MINUTE))+":"+dI.format(cal.get(Calendar.SECOND));
         	dataMap.put("accountNo", currentRecord.getAccount());
         	dataMap.put("action", "DEPOSIT");
@@ -124,6 +125,8 @@ public class DepositForm extends MoneyTransactionForm {
 			currentRecord.setTransactionActionType(TransactionRecord.ActionType.NEW);
 			currentRecord.setTransactionType(TransactionRecord.Type.TRANSACTION);
         }
+        String formName=formTitleMsg;
+		
 		 //---build content
         GridPane grid = new GridPane();
         //----- content detail ---------------
@@ -351,7 +354,7 @@ public class DepositForm extends MoneyTransactionForm {
 			if (ss.equalsIgnoreCase("accountNo")){
 				
 				Label valueLabe = new Label(accountNo);
-				valueLabe.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				valueLabe.setFont(Font.font("Tahoma", FontWeight.BOLD, 16));				
 				hBox.getChildren().addAll(nameLabel, valueLabe);
 				grid.add(hBox, 0, iRow);
 				iRow += 2;
@@ -360,7 +363,7 @@ public class DepositForm extends MoneyTransactionForm {
 			if (ss.equalsIgnoreCase("accountName")){
 				
 				Label nameLabeNm = new Label(accountName);
-				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.BOLD, 16));				
 				hBox.getChildren().addAll(nameLabel, nameLabeNm);
 				grid.add(hBox, 0, iRow);
 				iRow += 2;
@@ -369,7 +372,7 @@ public class DepositForm extends MoneyTransactionForm {
 			if (ss.equalsIgnoreCase("action")){
 				
 				Label nameLabeNm = new Label(" DEPOSIT");
-				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.BOLD, 14));				
 				hBox.getChildren().addAll(nameLabel, nameLabeNm);
 				grid.add(hBox, 0, iRow);
 				iRow += 2;

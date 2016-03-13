@@ -102,27 +102,31 @@ public class WithdrawForm extends MoneyTransactionForm {
 		 */
 			DecimalFormat dI=new DecimalFormat("00");
 			DecimalFormat dF=new DecimalFormat("0.00");
-		String formName="NEW";
-        if (action != null && action!=Form_Action.NEW) {
-        	formName="DEAR";
-        }
-        else {
-    		Calendar cal=GregorianCalendar.getInstance();
-    		String date=dI.format(cal.get(Calendar.MONTH))+"/"+dI.format(cal.get(Calendar.DATE))+"/"+dI.format(cal.get(Calendar.YEAR));
-    		String time=dI.format(cal.get(Calendar.HOUR))+":"+dI.format(cal.get(Calendar.MINUTE))+":"+dI.format(cal.get(Calendar.SECOND));
-        	dataMap.put("accountNo", currentRecord.getAccount());
-        	dataMap.put("action", "WITHDRAW");
-        	dataMap.put("amount", "0"); 
-			dataMap.put("date",  date);
-			dataMap.put("time",  time);
-			dataMap.put("balance", dF.format(customer.balance));
-			dataMap.put("lastBalance",  dF.format(customer.lastBalance));
-			dataMap.put("processedBy",  dI.format(app.getCurrentUser().userID));
-			dataMap.put("reason", "");
-			dataMap.put("confirmedBy", "");
-			currentRecord.setTransactionActionType(TransactionRecord.ActionType.NEW);
-			currentRecord.setTransactionType(TransactionRecord.Type.TRANSACTION);
-        }
+			boolean notNew=false;
+	        if (action != null && action!=Form_Action.NEW) {
+	        	notNew=true;
+	        	formTitleMsg="Show Current Balance";
+	        }
+	        else {
+	        	formTitleMsg="New WITHDRAW";
+	    		Calendar cal=GregorianCalendar.getInstance();
+	    		String date=dI.format(cal.get(Calendar.MONTH)+1)+"/"+dI.format(cal.get(Calendar.DATE))+"/"+dI.format(cal.get(Calendar.YEAR));
+	    		String time=dI.format(cal.get(Calendar.HOUR))+":"+dI.format(cal.get(Calendar.MINUTE))+":"+dI.format(cal.get(Calendar.SECOND));
+	        	dataMap.put("accountNo", currentRecord.getAccount());
+	        	dataMap.put("action", "WITHDRAW");
+	        	dataMap.put("amount", "0"); 
+				dataMap.put("date",  date);
+				dataMap.put("time",  time);
+				dataMap.put("balance", dF.format(customer.balance));
+				dataMap.put("lastBalance",  dF.format(customer.lastBalance));
+				dataMap.put("processedBy",  dI.format(app.getCurrentUser().userID));
+				dataMap.put("reason", "");
+				dataMap.put("confirmedBy", "");
+				currentRecord.setTransactionActionType(TransactionRecord.ActionType.NEW);
+				currentRecord.setTransactionType(TransactionRecord.Type.TRANSACTION);
+	        }
+	        String formName=formTitleMsg;
+
 		 //---build content
         GridPane grid = new GridPane();
         //----- content detail ---------------
@@ -153,7 +157,7 @@ public class WithdrawForm extends MoneyTransactionForm {
 			if (ss.equalsIgnoreCase("accountNo")){
 				
 				Label valueLabe = new Label(accountNo);
-				valueLabe.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				valueLabe.setFont(Font.font("Tahoma", FontWeight.BOLD, 16));				
 				hBox.getChildren().addAll(nameLabel, valueLabe);
 				grid.add(hBox, 0, iRow);
 				iRow += 2;
@@ -162,7 +166,7 @@ public class WithdrawForm extends MoneyTransactionForm {
 			if (ss.equalsIgnoreCase("accountName")){
 				
 				Label nameLabeNm = new Label(accountName);
-				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.BOLD, 16));				
 				hBox.getChildren().addAll(nameLabel, nameLabeNm);
 				grid.add(hBox, 0, iRow);
 				iRow += 2;
@@ -171,7 +175,7 @@ public class WithdrawForm extends MoneyTransactionForm {
 			if (ss.equalsIgnoreCase("action")){
 				
 				Label nameLabeNm = new Label(" WITHDRAW");
-				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.BOLD, 14));				
 				hBox.getChildren().addAll(nameLabel, nameLabeNm);
 				grid.add(hBox, 0, iRow);
 				iRow += 2;
@@ -179,8 +183,8 @@ public class WithdrawForm extends MoneyTransactionForm {
 			}
 			if (ss.equalsIgnoreCase("balance")){
 				
-				Label nameLabeNm = new Label(dF.format(customer.balance));
-				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));				
+				Label nameLabeNm = new Label(dF.format(customer.balance)+" available");
+				nameLabeNm.setFont(Font.font("Tahoma", FontWeight.BOLD, 16));				
 				hBox.getChildren().addAll(nameLabel, nameLabeNm);
 				grid.add(hBox, 0, iRow);
 				iRow += 2;

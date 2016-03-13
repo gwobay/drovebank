@@ -115,6 +115,7 @@ public class AppCommander extends Application {
 				updateProgress(80, 100);
 				if (bRecord.getStatus()==TransactionRecord.TransactionState.FAILED){
 					lastExecutionFlag=false;
+					myLogger.warning("processing failed");
 					setWindowTitle("Failed, Try Again!!");
 					updateProgress(100, 100);
 					sentData.setProcessReason(bRecord.getProcessReason());
@@ -131,6 +132,7 @@ public class AppCommander extends Application {
 					startedBy.currentForm.setFormTitleMsg("Welcome Dear "+accountName);							
 					if (myMachine.currentForm.getCurrentRecord().getTransactionType()==TransactionRecord.Type.PROFILE){
 						myMachine.currentForm.setCurrentRecord(zRecord);
+						
 						startedBy.currentForm=myMachine.currentForm;
 						myMachine.respMsgBox.clear();
 						updateProgress(100, 100);
@@ -259,7 +261,7 @@ public class AppCommander extends Application {
 			wkMachine=app.myMachine;
 		}
 		@Override public Void call() {	
-			
+			myLogger.info("Processing "+wkRecords.length+" records");
 			updateProgress(0, 100);
 			for (int i=0; i<wkRecords.length; i++){
 				TransactionRecord wkRecord=wkRecords[i];
@@ -293,7 +295,9 @@ public class AppCommander extends Application {
 				updateProgress((i+1)*0.8, wkRecords.length);
 				if (bRecord.getStatus()==TransactionRecord.TransactionState.FAILED){
 					lastExecutionFlag=false;
+					myLogger.info("processing failed");
 					setWindowTitle("Failed, Try Again!!");
+					myMachine.respMsgBox.clear();
 					updateProgress(100, 100);
 					sentData.setProcessReason(bRecord.getProcessReason());
 					//showWarningMesssage(myStage, bRecord.toString());
@@ -340,7 +344,7 @@ public class AppCommander extends Application {
 	}
 	final public void showWarningMesssage(Stage primaryStage, String msg){
 		primaryStage.setScene(setWarningScene(primaryStage, msg));
-		primaryStage.setTitle("DroveBank "+currentForm.getName());
+		primaryStage.setTitle("DroveBank "+currentForm.getName()+" processed failed");
 	        //primaryStage.setScene(scene);
 	    primaryStage.show();
 	}
@@ -762,7 +766,8 @@ public class AppCommander extends Application {
 	        			//this will be taken care by the warning msg screen
 	        			//primaryStage.setScene(lastScene);
 		            	//primaryStage.show();
-	        		} if (pendingResults.size()>0){
+	        		} 
+	        		else if (pendingResults.size()>0){
 	        			processResult(primaryStage);
 	        		}
 	        		else
@@ -837,6 +842,11 @@ public class AppCommander extends Application {
 	            @Override
 	            public void handle(ActionEvent e) {
 	            	//showCurrentForm(primaryStage);
+	            	myMachine.getCurrentForm().processStatus=true;           	
+            		myMachine.getCurrentForm().setNextFormType(
+            				myMachine.getCurrentForm().getFormType());
+            		//swapWindow(primaryStage);
+            		
 	            	if (lastScene==null)
 	            		swapWindow(primaryStage);
 	            	else {

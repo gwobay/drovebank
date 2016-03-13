@@ -163,7 +163,7 @@ public class TransactionStruct extends TransactionRecord {
 			recordDataMap.put("accountNo", accountNo);
 			recordDataMap.put("date", date);
 			recordDataMap.put("time", time);
-			if (action==Action.DEPOSIT) recordDataMap.put("action", "DEPOSITION");
+			if (action==Action.DEPOSIT) recordDataMap.put("action", "DEPOSIT");
 			else recordDataMap.put("action", "WITHDRAW");
 			recordDataMap.put("reason", reason);
 			recordDataMap.put("amount", dF.format(amount));
